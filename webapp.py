@@ -183,8 +183,15 @@ def _assemble_video(work_dir: Path, takes: list, narr_path: Path,
 
     def make_sub(text, duration):
         pad, fsize = 40, 68
-        try: font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", fsize)
-        except: font = ImageFont.load_default(size=fsize)
+        font_candidates = [
+            "C:/Windows/Fonts/arialbd.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        ]
+        font = ImageFont.load_default(size=fsize)
+        for fp in font_candidates:
+            try: font = ImageFont.truetype(fp, fsize); break
+            except: pass
         dummy = Image.new("RGBA", (1, 1))
         draw  = ImageDraw.Draw(dummy)
         bbox  = draw.multiline_textbbox((0, 0), text, font=font, align="center")

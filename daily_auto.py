@@ -225,10 +225,15 @@ def edit_video(work_dir: Path, takes: list, narr_path: Path) -> Path:
 
     def make_subtitle(text, duration):
         pad, fsize = 40, 68
-        try:
-            font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", fsize)
-        except Exception:
-            font = ImageFont.load_default(size=fsize)
+        font_candidates = [
+            "C:/Windows/Fonts/arialbd.ttf",           # Windows
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",  # Ubuntu
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",          # Ubuntu fallback
+        ]
+        font = ImageFont.load_default(size=fsize)
+        for path in font_candidates:
+            try: font = ImageFont.truetype(path, fsize); break
+            except: pass
         dummy = Image.new("RGBA", (1, 1))
         draw  = ImageDraw.Draw(dummy)
         bbox  = draw.multiline_textbbox((0, 0), text, font=font, align="center")

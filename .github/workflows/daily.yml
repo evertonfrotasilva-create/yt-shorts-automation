@@ -14,29 +14,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
+          cache-dependency-path: requirements.txt
 
-      - name: ffmpeg
-        run: sudo apt-get install -y ffmpeg
+      - name: ffmpeg e fontes
+        run: sudo apt-get install -y ffmpeg fonts-liberation fonts-dejavu
 
       - name: Dependencias Python
-        run: |
-          pip install \
-            elevenlabs \
-            "moviepy>=2.0" \
-            Pillow \
-            numpy \
-            requests \
-            python-dotenv \
-            google-auth \
-            google-auth-oauthlib \
-            google-api-python-client \
-            edge-tts
+        run: pip install -r requirements.txt
 
       - name: Rodar pipeline
         env:
