@@ -5,6 +5,9 @@ on:
     - cron: '0 9 * * *'   # 09:00 UTC = 06:00 BRT (UTC-3)
   workflow_dispatch:        # permite rodar manualmente no GitHub
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   produce:
     runs-on: ubuntu-latest
