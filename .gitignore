@@ -1,0 +1,23 @@
+# Segredos e tokens
+.env
+*.pkl
+youtube_client_secrets.json
+tiktok_token.json
+
+# Outputs (vídeos grandes — não vão para o repo)
+outputs/
+logs/
+
+# Assets de áudio (arquivos grandes)
+assets/*.mp3
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Temp
+*.tmp
+*.temp

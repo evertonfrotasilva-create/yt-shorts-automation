@@ -1,0 +1,8 @@
+{
+  "name": "yt-shorts-faceless",
+  "version": "0.1.0",
+  "description": "Pipeline completo para produzir YouTube Shorts faceless em inglês: tendências, roteiro, voz, vídeo stock, metadados e publicação.",
+  "author": {
+    "name": "Everton"
+  }
+}

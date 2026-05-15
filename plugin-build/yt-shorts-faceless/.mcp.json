@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "tts-voiceover": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/elevenlabs_mcp.py"],
+      "env": { "PYTHONIOENCODING": "utf-8" }
+    },
+    "pexels-video": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/pika_mcp.py"],
+      "env": { "PYTHONIOENCODING": "utf-8" }
+    },
+    "youtube-upload": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/youtube_mcp.py"],
+      "env": { "PYTHONIOENCODING": "utf-8" }
+    }
+  }
+}

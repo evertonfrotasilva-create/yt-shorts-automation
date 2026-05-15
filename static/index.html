@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YT Shorts Studio</title>
+  <script src="/static/tailwind.min.js"></script>
+  <script src="/static/alpinejs.min.js" defer></script>
+  <style>
+    [x-cloak]{display:none!important}
+    .spin{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .progress-bar{transition:width .4s ease}
+    textarea{resize:vertical}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:#111}
+    ::-webkit-scrollbar-thumb{background:#444;border-radius:3px}
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen font-sans" x-data="app()" x-init="init()" x-cloak>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<header class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <span class="text-2xl">🎬</span>
+    <div>
+      <h1 class="text-lg font-bold text-white leading-none">YT Shorts Studio</h1>
+      <p class="text-xs text-gray-400 mt-0.5">The Reality of Money by Rufino</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="text-xs text-gray-500" x-text="weekLabel"></span>
+    <button @click="loadQueue()"
+            class="text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">
+      ↺ Atualizar
+    </button>
+  </div>
+</header>
+
+<!-- ── TABS ───────────────────────────────────────────────────────────────── -->
+<nav class="bg-gray-900 border-b border-gray-800 px-6">
+  <div class="flex gap-0">
+    <button @click="tab='queue'"
+            :class="tab==='queue' ? 'border-b-2 border-amber-400 text-amber-400' : 'text-gray-400 hover:text-white'"
+            class="px-4 py-3 text-sm font-medium transition">
+      Fila Semanal
+    </button>
+    <button @click="tab='single'"
+            :class="tab==='single' ? 'border-b-2 border-amber-400 text-amber-400' : 'text-gray-400 hover:text-white'"
+            class="px-4 py-3 text-sm font-medium transition">
+      Producao Avulsa
+    </button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- TAB: FILA SEMANAL                                                       -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='queue'" class="p-6 max-w-7xl mx-auto">
+
+  <!-- Loading -->
+  <div x-show="loadingQueue" class="flex items-center gap-2 text-gray-400 py-8 justify-center">
+    <div class="spin w-5 h-5 border-2 border-gray-600 border-t-amber-400 rounded-full"></div>
+    Carregando fila...
+  </div>
+
+  <!-- Banner: semana atual sem fila -->
+  <div x-show="!loadingQueue && entries.length===0"
+       class="mb-4 bg-gray-900 border border-gray-700 rounded-xl p-6 text-center">
+    <p class="text-3xl mb-2">📭</p>
+    <p class="font-semibold text-gray-300 mb-1">Nenhuma fila para esta semana</p>
+    <p class="text-sm text-gray-500 mb-4">Crie a fila e preencha as narracoes para comecar</p>
+    <button @click="createWeek(false)"
+            :disabled="creatingWeek"
+            class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-sm px-5 py-2 rounded-lg transition">
+      <span x-text="creatingWeek ? 'Criando...' : 'Criar fila desta semana'"></span>
+    </button>
+  </div>
+
+  <!-- Banner: próxima semana sem fila -->
+  <div x-show="!loadingQueue && entries.length>0 && nextWeek && !nextWeek.exists"
+       class="mb-4 bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-center justify-between">
+    <div>
+      <p class="text-sm font-semibold text-amber-300">Proxima semana sem fila</p>
+      <p class="text-xs text-amber-600 mt-0.5"
+         x-text="'Semana ' + (nextWeek?.iso_week||'') + ' — crie agora e preencha as narracoes no Cowork'"></p>
+    </div>
+    <button @click="createWeek(true)"
+            :disabled="creatingWeek"
+            class="flex-shrink-0 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs px-4 py-2 rounded-lg transition ml-4">
+      <span x-text="creatingWeek ? 'Criando...' : 'Criar proxima semana'"></span>
+    </button>
+  </div>
+
+  <!-- Confirmacao de criacao -->
+  <div x-show="weekCreated" x-transition
+       class="mb-4 bg-green-950/40 border border-green-800/50 rounded-xl p-3 text-sm text-green-300 flex items-center gap-2">
+    Fila criada! Preencha as narracoes de cada dia pelo botao Editar.
+    <button @click="weekCreated=false" class="ml-auto text-green-600 hover:text-green-400">&times;</button>
+  </div>
+
+  <!-- Grid de dias -->
+  <div x-show="!loadingQueue && entries.length>0"
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <template x-for="entry in entries" :key="entry.slug">
+      <div class="bg-gray-900 rounded-xl border transition-all"
+           :class="cardBorder(entry)">
+
+        <!-- Card header -->
+        <div class="p-4 pb-2">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <p class="font-bold text-white text-base" x-text="entry.day_pt"></p>
+              <p class="text-xs text-gray-500" x-text="formatDate(entry.date)"></p>
+            </div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  :class="badgeCls(entry.status)"
+                  x-text="statusLabel(entry.status)"></span>
+          </div>
+          <p class="text-sm text-gray-300 truncate min-h-[1.25rem]"
+             x-text="entry.title || (entry.narration ? '(sem titulo)' : '(vazio)')"></p>
+        </div>
+
+        <!-- Progress bar -->
+        <div x-show="jobs[entry.slug]" class="px-4 pb-2">
+          <div class="h-1.5 bg-gray-800 rounded-full overflow-hidden mb-1">
+            <div class="h-full bg-amber-400 rounded-full progress-bar"
+                 :style="'width:'+(jobs[entry.slug]?.progress||0)+'%'"></div>
+          </div>
+          <p class="text-xs text-amber-300 truncate" x-text="jobs[entry.slug]?.message || ''"></p>
+        </div>
+
+        <!-- Error -->
+        <div x-show="entry.status==='error' && entry.error_msg" class="px-4 pb-2">
+          <p class="text-xs text-red-400 truncate" x-text="entry.error_msg"></p>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-4 pb-4 flex items-center gap-2 flex-wrap">
+
+          <a x-show="entry.youtube_url" :href="entry.youtube_url" target="_blank"
+             class="flex items-center gap-1 text-xs bg-red-900/40 hover:bg-red-900/60 text-red-300 px-2 py-1 rounded-lg transition">
+            Ver YT
+          </a>
+
+          <button @click="startEdit(entry.slug)"
+                  :disabled="entry.status==='producing'"
+                  class="flex-1 text-xs bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-300 px-3 py-1.5 rounded-lg transition">
+            Editar
+          </button>
+
+          <button @click="produce(entry.slug)"
+                  :disabled="!entry.narration || entry.status==='producing' || entry.status==='done'"
+                  class="flex-1 text-xs font-semibold disabled:opacity-40 px-3 py-1.5 rounded-lg transition"
+                  :class="entry.status==='done'
+                    ? 'bg-green-900/40 text-green-400 cursor-default'
+                    : 'bg-amber-500 hover:bg-amber-400 text-black'">
+            <span x-show="entry.status!=='producing' && entry.status!=='done'">Produzir</span>
+            <span x-show="entry.status==='producing'" class="flex items-center gap-1 justify-center">
+              <span class="spin inline-block w-3 h-3 border border-amber-800 border-t-amber-300 rounded-full"></span>
+              Produzindo
+            </span>
+            <span x-show="entry.status==='done'">Pronto</span>
+          </button>
+
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- ── MODAL DE EDICAO ───────────────────────────────────────────────────── -->
+  <div x-show="editingSlug" x-transition
+       class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+       @click.self="cancelEdit()">
+    <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+
+      <div class="flex items-center justify-between p-5 border-b border-gray-800">
+        <div>
+          <h2 class="font-bold text-white text-lg" x-text="'Editar — ' + (editingEntry?.day_pt || '')"></h2>
+          <p class="text-xs text-gray-400" x-text="editingEntry?.date || ''"></p>
+        </div>
+        <button @click="cancelEdit()" class="text-gray-500 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div class="p-5 space-y-4">
+
+        <div>
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Narracao (ingles)</label>
+          <textarea x-model="editForm.narration" rows="6"
+                    placeholder="Cole aqui o texto gerado pelo Cowork..."
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"></textarea>
+          <p class="text-xs text-gray-600 mt-1"
+             x-text="editForm.narration ? editForm.narration.split(' ').length + ' palavras' : ''"></p>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Titulo (YouTube)</label>
+          <input x-model="editForm.title" type="text" maxlength="100"
+                 placeholder="Your emergency fund is costing you $400,000"
+                 class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"/>
+          <p class="text-xs text-gray-600 mt-1"
+             x-text="editForm.title ? editForm.title.length + '/100 caracteres' : ''"></p>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Descricao</label>
+          <textarea x-model="editForm.description" rows="3"
+                    placeholder="Descricao com hashtags..."
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"></textarea>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Tags (separadas por virgula)</label>
+          <input x-model="editForm.tags_str" type="text"
+                 placeholder="personal finance, money, investing..."
+                 class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Voz</label>
+            <select x-model="editForm.voice"
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <option value="rachel">Rachel (padrao)</option>
+              <option value="adam">Adam</option>
+              <option value="domi">Domi</option>
+              <option value="elli">Elli</option>
+              <option value="josh">Josh</option>
+              <option value="arnold">Arnold</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Publicar as (BRT)</label>
+            <select x-model.number="editForm.publish_hour_brt"
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <option value="12">12:00</option>
+              <option value="15">15:00</option>
+              <option value="18">18:00 (recomendado)</option>
+              <option value="20">20:00</option>
+              <option value="21">21:00</option>
+            </select>
+          </div>
+        </div>
+
+        <div x-show="editForm.narration">
+          <button @click="translatePreview()"
+                  class="text-xs text-blue-400 hover:text-blue-300 transition">
+            Ver traducao em portugues (nao afeta a gravacao)
+          </button>
+          <div x-show="translatedText" x-transition
+               class="mt-2 bg-gray-800 border border-gray-700 rounded-lg p-3 text-sm text-gray-300 leading-relaxed"
+               x-text="translatedText"></div>
+        </div>
+
+      </div>
+
+      <div class="flex items-center justify-between px-5 py-4 border-t border-gray-800">
+        <button @click="cancelEdit()"
+                class="text-sm text-gray-400 hover:text-white transition">Cancelar</button>
+        <button @click="saveEdit()"
+                :disabled="saving"
+                class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-60 text-black font-semibold text-sm px-5 py-2 rounded-lg transition">
+          <span x-show="saving" class="spin w-4 h-4 border-2 border-black/30 border-t-black rounded-full"></span>
+          <span x-text="saving ? 'Salvando...' : 'Salvar'"></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end queue tab -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- TAB: PRODUCAO AVULSA                                                    -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='single'" class="p-6 max-w-2xl mx-auto">
+
+  <div class="flex items-center gap-2 mb-6 text-xs text-gray-500">
+    <span :class="singleStep>=1?'text-amber-400 font-semibold':''">1. Narracao</span>
+    <span class="text-gray-700">></span>
+    <span :class="singleStep>=2?'text-amber-400 font-semibold':''">2. Revisar</span>
+    <span class="text-gray-700">></span>
+    <span :class="singleStep>=3?'text-amber-400 font-semibold':''">3. Produzindo</span>
+    <span class="text-gray-700">></span>
+    <span :class="singleStep>=4?'text-amber-400 font-semibold':''">4. Pronto</span>
+  </div>
+
+  <!-- Step 1 -->
+  <div x-show="singleStep===1" class="space-y-4">
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <h2 class="font-bold text-white mb-4">Cole a narracao do Cowork</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-400">Tema / Titulo</label>
+          <input x-model="single.topic" type="text"
+                 placeholder="ex: Why your emergency fund is wrong"
+                 class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"/>
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Narracao (ingles)</label>
+          <textarea x-model="single.narration" rows="8"
+                    placeholder="Cole aqui o texto limpo gerado pelo Cowork..."
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500"></textarea>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="text-xs text-gray-400">Takes</label>
+            <select x-model.number="single.num_takes"
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="14">14</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400">Duracao (s)</label>
+            <input x-model.number="single.duration" type="number" min="30" max="90"
+                   class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400">Voz</label>
+            <select x-model="single.voice"
+                    class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <option value="rachel">Rachel</option>
+              <option value="adam">Adam</option>
+              <option value="josh">Josh</option>
+            </select>
+          </div>
+        </div>
+        <button @click="prepareScript()"
+                :disabled="!single.narration.trim() || preparing"
+                class="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+          <span x-show="preparing" class="spin w-4 h-4 border-2 border-black/30 border-t-black rounded-full"></span>
+          <span x-text="preparing ? 'Preparando...' : 'Preparar Roteiro'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div x-show="singleStep===2" class="space-y-4">
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-white">Roteiro — <span x-text="single.takes.length"></span> takes</h2>
+        <button @click="singleStep=1" class="text-xs text-gray-500 hover:text-gray-300">Voltar</button>
+      </div>
+      <div class="space-y-2 max-h-60 overflow-y-auto mb-4">
+        <template x-for="(take, i) in single.takes" :key="i">
+          <div class="bg-gray-800 rounded-lg p-3 text-xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-amber-400" x-text="take.slug"></span>
+              <span class="text-gray-500" x-text="take.duration + 's'"></span>
+            </div>
+            <p class="text-gray-300" x-text="(take.subtitle||'').replace('\n',' | ')"></p>
+            <p class="text-gray-600 truncate mt-0.5" x-text="'Busca: ' + take.query"></p>
+          </div>
+        </template>
+      </div>
+      <button @click="translateSingle()"
+              class="text-xs text-blue-400 hover:text-blue-300 mb-3 transition block">
+        Ver traducao em portugues
+      </button>
+      <div x-show="single.translated" x-transition
+           class="bg-gray-800 rounded-lg p-3 text-sm text-gray-300 leading-relaxed mb-4 max-h-36 overflow-y-auto"
+           x-text="single.translated"></div>
+      <button @click="startSingleProduction()"
+              class="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-2.5 rounded-lg transition">
+        Produzir Video
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div x-show="singleStep===3">
+    <div class="bg-gray-900 rounded-xl border border-amber-800/50 p-6 text-center">
+      <div class="spin w-12 h-12 border-4 border-gray-700 border-t-amber-400 rounded-full mx-auto mb-4"></div>
+      <h2 class="font-bold text-white text-lg mb-1">Produzindo video...</h2>
+      <p class="text-sm text-gray-400 mb-4" x-text="singleJob.message || 'Aguarde...'"></p>
+      <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full bg-amber-400 rounded-full progress-bar"
+             :style="'width:'+(singleJob.progress||0)+'%'"></div>
+      </div>
+      <p class="text-xs text-gray-600 mt-2" x-text="(singleJob.progress||0) + '%'"></p>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div x-show="singleStep===4">
+    <div class="bg-gray-900 rounded-xl border border-green-800/50 p-6 text-center">
+      <div class="text-5xl mb-3">ok</div>
+      <h2 class="font-bold text-white text-xl mb-1">Video pronto!</h2>
+      <p class="text-sm text-gray-400 mb-1"
+         x-text="(singleJob.result?.size_mb||'?') + ' MB'"></p>
+      <div class="flex gap-3 justify-center mt-5">
+        <a :href="'/api/download/' + (singleJob.result?.topic_slug||'')"
+           class="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm px-5 py-2.5 rounded-lg transition">
+          Baixar MP4
+        </a>
+        <button @click="resetSingle()"
+                class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm px-5 py-2.5 rounded-lg transition">
+          Novo Video
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div x-show="singleJob.status==='error'" class="mt-4">
+    <div class="bg-red-950 border border-red-800 rounded-xl p-4 text-sm text-red-300"
+         x-text="'Erro: ' + singleJob.error"></div>
+    <button @click="resetSingle()" class="mt-3 text-xs text-gray-500 hover:text-gray-300">Tentar novamente</button>
+  </div>
+
+</div><!-- end single tab -->
+
+
+<!-- ── SCRIPT ──────────────────────────────────────────────────────────────── -->
+<script>
+function app() {
+  return {
+    tab: 'queue',
+
+    // Queue
+    entries: [],
+    weekLabel: '',
+    loadingQueue: true,
+    editingSlug: null,
+    editForm: {},
+    saving: false,
+    translatedText: '',
+    jobs: {},
+    pollTimers: {},
+    nextWeek: null,
+    creatingWeek: false,
+    weekCreated: false,
+
+    // Single
+    singleStep: 1,
+    single: { topic:'', narration:'', num_takes:12, duration:75, voice:'rachel', takes:[], translated:'' },
+    preparing: false,
+    singleJob: {},
+    singlePollTimer: null,
+
+    async init() {
+      await this.loadQueue()
+      this.entries.filter(e => e.status === 'producing').forEach(e => this.resumePoll(e.slug))
+    },
+
+    // ── Queue
+    async loadQueue() {
+      this.loadingQueue = true
+      try {
+        const r = await fetch('/api/queue')
+        const d = await r.json()
+        this.entries  = d.entries || []
+        this.nextWeek = d.next_week || null
+        const mon = this.mondayOf(d.iso_year, d.iso_week)
+        const sun = new Date(mon); sun.setDate(mon.getDate()+6)
+        this.weekLabel = `Semana ${d.iso_week} | ${this.fmt(mon)} - ${this.fmt(sun)}`
+      } catch(e) { console.error(e) }
+      this.loadingQueue = false
+    },
+
+    async createWeek(nextWeek) {
+      this.creatingWeek = true
+      try {
+        const r = await fetch(`/api/queue/create-week?next_week=${nextWeek}`, { method:'POST' })
+        if (r.ok) { this.weekCreated = true; await this.loadQueue() }
+        else { alert('Erro ao criar fila') }
+      } catch(e) { alert('Erro: ' + e) }
+      this.creatingWeek = false
+    },
+
+    startEdit(slug) {
+      const e = this.entries.find(x => x.slug === slug)
+      this.editingSlug  = slug
+      this.translatedText = ''
+      this.editForm = {
+        narration: e.narration || '',
+        title: e.title || '',
+        description: e.description || '',
+        tags_str: (e.tags || []).join(', '),
+        voice: e.voice || 'rachel',
+        publish_hour_brt: e.publish_hour_brt || 18,
+      }
+    },
+
+    cancelEdit() { this.editingSlug = null; this.translatedText = '' },
+
+    get editingEntry() { return this.entries.find(e => e.slug === this.editingSlug) },
+
+    async saveEdit() {
+      this.saving = true
+      const tags = this.editForm.tags_str.split(',').map(t=>t.trim()).filter(t=>t)
+      const body = { ...this.editForm, tags }
+      delete body.tags_str
+      try {
+        const r = await fetch(`/api/queue/${this.editingSlug}`, {
+          method: 'PUT', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(body)
+        })
+        if (!r.ok) { const d=await r.json(); throw new Error(d.detail) }
+        await this.loadQueue()
+        this.editingSlug = null
+      } catch(e) { alert('Erro ao salvar: ' + e.message) }
+      this.saving = false
+    },
+
+    async translatePreview() {
+      if (!this.editForm.narration) return
+      this.translatedText = 'Traduzindo...'
+      try {
+        const r = await fetch('/api/script/translate', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ text: this.editForm.narration })
+        })
+        const d = await r.json()
+        this.translatedText = d.translated || 'Sem resultado.'
+      } catch(e) { this.translatedText = 'Erro ao traduzir.' }
+    },
+
+    async produce(slug) {
+      try {
+        const r = await fetch(`/api/queue/${slug}/produce`, { method:'POST' })
+        if (!r.ok) { const d=await r.json(); alert(d.detail||'Erro'); return }
+        const d = await r.json()
+        this.jobs[slug] = { progress:0, message:'Iniciando...' }
+        await this.loadQueue()
+        this.startPoll(slug, d.job_id)
+      } catch(e) { alert('Erro: ' + e) }
+    },
+
+    startPoll(slug, jobId) {
+      if (this.pollTimers[slug]) clearInterval(this.pollTimers[slug])
+      this.pollTimers[slug] = setInterval(async () => {
+        try {
+          const r = await fetch(`/api/produce/status/${jobId}`)
+          const d = await r.json()
+          this.jobs[slug] = d
+          if (d.status === 'done' || d.status === 'error') {
+            clearInterval(this.pollTimers[slug])
+            delete this.pollTimers[slug]
+            await this.loadQueue()
+            if (d.status === 'done') delete this.jobs[slug]
+          }
+        } catch(e) {}
+      }, 2000)
+    },
+
+    async resumePoll(slug) {
+      try {
+        const r = await fetch(`/api/queue/job/${slug}`)
+        if (r.ok) {
+          const d = await r.json()
+          this.jobs[slug] = d
+          if (d.status !== 'done' && d.status !== 'error') this.startPoll(slug, d.id)
+        }
+      } catch(e) {}
+    },
+
+    statusLabel(s) {
+      return { pending:'Pendente', producing:'Produzindo', done:'Pronto', error:'Erro' }[s] || s
+    },
+    badgeCls(s) {
+      return {
+        pending:   'bg-gray-800 text-gray-400',
+        producing: 'bg-amber-900/60 text-amber-300',
+        done:      'bg-green-900/60 text-green-300',
+        error:     'bg-red-900/60 text-red-400',
+      }[s] || 'bg-gray-800 text-gray-400'
+    },
+    cardBorder(entry) {
+      if (this.jobs[entry.slug]) return 'border-amber-700/60'
+      return { pending:'border-gray-800', producing:'border-amber-700/60',
+               done:'border-green-800/60', error:'border-red-800/60' }[entry.status] || 'border-gray-800'
+    },
+    formatDate(d) {
+      if (!d) return ''
+      const [,m,day] = d.split('-')
+      const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+      return `${parseInt(day)} ${months[parseInt(m)-1]}`
+    },
+    mondayOf(year, week) {
+      const jan4 = new Date(year, 0, 4)
+      const mon  = new Date(jan4)
+      mon.setDate(jan4.getDate() - ((jan4.getDay()||7)-1) + (week-1)*7)
+      return mon
+    },
+    fmt(d) {
+      const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+      return `${d.getDate()} ${months[d.getMonth()]}`
+    },
+
+    // ── Single
+    async prepareScript() {
+      if (!this.single.narration.trim()) return
+      this.preparing = true
+      try {
+        const r = await fetch('/api/script/prepare', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            narration: this.single.narration,
+            num_takes: this.single.num_takes,
+            duration:  this.single.duration,
+            topic:     this.single.topic,
+          })
+        })
+        const d = await r.json()
+        this.single.takes = d.takes || []
+        this.single.slug  = d.suggested_slug || 'video'
+        this.singleStep   = 2
+      } catch(e) { alert('Erro: ' + e) }
+      this.preparing = false
+    },
+
+    async translateSingle() {
+      if (!this.single.narration) return
+      this.single.translated = 'Traduzindo...'
+      try {
+        const r = await fetch('/api/script/translate', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ text: this.single.narration })
+        })
+        const d = await r.json()
+        this.single.translated = d.translated || ''
+      } catch(e) { this.single.translated = 'Erro ao traduzir.' }
+    },
+
+    async startSingleProduction() {
+      this.singleStep = 3
+      try {
+        const r = await fetch('/api/produce/start', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            topic_slug: this.single.slug || this.single.topic || 'video',
+            narration:  this.single.narration,
+            takes:      this.single.takes,
+            voice:      this.single.voice,
+            background_music: true,
+          })
+        })
+        const d = await r.json()
+        this.singlePollTimer = setInterval(async () => {
+          const sr = await fetch(`/api/produce/status/${d.job_id}`)
+          const sd = await sr.json()
+          this.singleJob = sd
+          if (sd.status === 'done') { clearInterval(this.singlePollTimer); this.singleStep = 4 }
+          if (sd.status === 'error') clearInterval(this.singlePollTimer)
+        }, 2000)
+      } catch(e) { alert('Erro: ' + e) }
+    },
+
+    resetSingle() {
+      this.singleStep = 1
+      this.singleJob  = {}
+      this.single     = { topic:'', narration:'', num_takes:12, duration:75, voice:'rachel', takes:[], translated:'' }
+    },
+  }
+}
+</script>
+</body>
+</html>

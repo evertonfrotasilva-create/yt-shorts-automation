@@ -1,0 +1,57 @@
+name: Daily YT Short
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # 09:00 UTC = 06:00 BRT (UTC-3)
+  workflow_dispatch:        # permite rodar manualmente no GitHub
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # necessário para commitar o JSON da fila atualizado
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: ffmpeg
+        run: sudo apt-get install -y ffmpeg
+
+      - name: Dependencias Python
+        run: |
+          pip install \
+            elevenlabs \
+            "moviepy>=2.0" \
+            Pillow \
+            numpy \
+            requests \
+            python-dotenv \
+            google-auth \
+            google-auth-oauthlib \
+            google-api-python-client \
+            edge-tts
+
+      - name: Rodar pipeline
+        env:
+          ELEVENLABS_API_KEY:    ${{ secrets.ELEVENLABS_API_KEY }}
+          PEXELS_API_KEY:        ${{ secrets.PEXELS_API_KEY }}
+          YOUTUBE_CLIENT_ID:     ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          OUTPUT_DIR:            /tmp/yt-outputs
+        run: python daily_auto.py --skip-upload=false
+
+      - name: Salvar fila atualizada no repo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add queue/
+          git diff --staged --quiet || git commit -m "auto: queue $(date +%Y-%m-%d)"
+          git push
