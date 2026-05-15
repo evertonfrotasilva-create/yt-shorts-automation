@@ -43,6 +43,16 @@ jobs:
           OUTPUT_DIR:            /tmp/yt-outputs
         run: python daily_auto.py
 
+      - name: Definir data de hoje
+        run: echo "TODAY=$(date +%Y-%m-%d)" >> $GITHUB_ENV
+
+      - name: Salvar video editado como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: short-${{ env.TODAY }}
+          path: /tmp/yt-outputs/**/final_video.mp4
+          retention-days: 7
+
       - name: Salvar fila atualizada no repo
         run: |
           git config user.name  "github-actions[bot]"
