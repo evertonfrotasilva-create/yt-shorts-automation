@@ -46,7 +46,7 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           OUTPUT_DIR:            /tmp/yt-outputs
-        run: python daily_auto.py --skip-upload=false
+        run: python daily_auto.py
 
       - name: Salvar fila atualizada no repo
         run: |
