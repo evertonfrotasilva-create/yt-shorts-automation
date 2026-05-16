@@ -117,8 +117,11 @@
       "money psychology"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "KjHQfMP2ABo",
+    "youtube_url": "https://www.youtube.com/shorts/KjHQfMP2ABo",
+    "produced_at": "2026-05-16T10:25:12.838106"
   },
   {
     "day": "sunday",
