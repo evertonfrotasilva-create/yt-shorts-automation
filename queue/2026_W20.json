@@ -147,7 +147,10 @@
       "money tips"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "lJwpDilRatc",
+    "youtube_url": "https://www.youtube.com/shorts/lJwpDilRatc",
+    "produced_at": "2026-05-17T12:17:32.074489"
   }
 ]
