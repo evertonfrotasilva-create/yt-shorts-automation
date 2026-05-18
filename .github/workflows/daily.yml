@@ -2,35 +2,87 @@ name: Daily YT Short
 
 on:
   schedule:
-    - cron: '0 9 * * *'   # 09:00 UTC = 06:00 BRT (UTC-3)
-  workflow_dispatch:        # permite rodar manualmente no GitHub
+    - cron: '0 9 * * *'   # 09:00 UTC = 06:00 BRT
+  workflow_dispatch:
+
+# Permissão padrão: somente leitura
+# Cada job eleva apenas o que precisa
+permissions:
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PYTHON_VERSION: '3.11'
 
+# ── JOB 1: Validação ──────────────────────────────────────────────────────────
+# Roda rápido (sem ffmpeg, sem API calls reais) para garantir que:
+#  - nenhuma dependência tem vulnerabilidade conhecida
+#  - a fila de hoje existe e tem narração preenchida
+#  - o código importa sem erros
 jobs:
-  produce:
+  validate:
+    name: Validate
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # necessário para commitar o JSON da fila atualizado
+      contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Python 3.11
+      - name: Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Auditoria de segurança (pip-audit)
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt --progress-spinner off || true
+        # || true: reporta vulnerabilidades mas não bloqueia produção
+        # Remova o "|| true" quando quiser bloquear em vulnerabilidades críticas
+
+      - name: Dry-run — validar fila de hoje
+        env:
+          ELEVENLABS_API_KEY:    ${{ secrets.ELEVENLABS_API_KEY }}
+          PEXELS_API_KEY:        ${{ secrets.PEXELS_API_KEY }}
+          YOUTUBE_CLIENT_ID:     ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          OUTPUT_DIR:            /tmp/yt-outputs
+        run: python daily_auto.py --dry-run
+
+# ── JOB 2: Produção ───────────────────────────────────────────────────────────
+# Só roda se a validação passar. Eleva para contents: write apenas aqui,
+# onde o commit da fila atualizada é necessário.
+  produce:
+    name: Produce & Upload
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # para commitar queue/ de volta
+      issues: write     # para abrir issue em caso de falha
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: requirements.txt
 
       - name: ffmpeg e fontes
-        run: sudo apt-get install -y ffmpeg fonts-liberation fonts-dejavu
+        run: sudo apt-get install -y --no-install-recommends ffmpeg fonts-liberation fonts-dejavu
 
-      - name: Dependencias Python
+      - name: Instalar dependências
         run: pip install -r requirements.txt
 
       - name: Rodar pipeline
@@ -43,13 +95,10 @@ jobs:
           OUTPUT_DIR:            /tmp/yt-outputs
         run: python daily_auto.py
 
-      - name: Definir data de hoje
-        run: echo "TODAY=$(date +%Y-%m-%d)" >> $GITHUB_ENV
-
-      - name: Salvar video editado como artefato
+      - name: Salvar vídeo como artefato
         uses: actions/upload-artifact@v4
         with:
-          name: short-${{ env.TODAY }}
+          name: short-${{ github.run_id }}
           path: /tmp/yt-outputs/**/final_video.mp4
           retention-days: 7
 
@@ -60,3 +109,15 @@ jobs:
           git add queue/
           git diff --staged --quiet || git commit -m "auto: queue $(date +%Y-%m-%d)"
           git push
+
+      # Notificação de falha: abre uma issue no repo com link para o log
+      - name: Notificar falha
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue create \
+            --title "[FALHA] Pipeline diario -- $(date +%Y-%m-%d)" \
+            --body "Producao automatica falhou. Log: ${RUN_URL}" \
+            --repo "${{ github.repository }}" || true

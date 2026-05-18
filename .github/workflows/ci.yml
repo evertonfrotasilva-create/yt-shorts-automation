@@ -1,0 +1,54 @@
+name: CI
+
+# Roda em todo push de branch e em PRs para master
+# Executa apenas o job 'validate' — sem produzir vídeo, sem gastar crédito de API
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.11'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Auditoria de segurança (pip-audit)
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt --progress-spinner off || true
+
+      - name: Dry-run — validar fila de hoje
+        env:
+          ELEVENLABS_API_KEY:    ${{ secrets.ELEVENLABS_API_KEY }}
+          PEXELS_API_KEY:        ${{ secrets.PEXELS_API_KEY }}
+          YOUTUBE_CLIENT_ID:     ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          OUTPUT_DIR:            /tmp/yt-outputs
+        run: python daily_auto.py --dry-run

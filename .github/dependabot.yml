@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # Dependências Python — abre PRs semanais com patches de segurança
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(pip)"
+
+  # GitHub Actions — mantém as actions em versões seguras
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(actions)"

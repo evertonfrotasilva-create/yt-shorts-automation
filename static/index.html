@@ -29,10 +29,26 @@
     </div>
   </div>
   <div class="flex items-center gap-2">
-    <span class="text-xs text-gray-500" x-text="weekLabel"></span>
+    <button @click="changeWeek(-1)"
+            :disabled="!prevWeekExists"
+            class="text-gray-400 hover:text-white disabled:opacity-30 bg-gray-800 hover:bg-gray-700 disabled:hover:bg-gray-800 px-2.5 py-1.5 rounded-lg transition text-sm">
+      ←
+    </button>
+    <span class="text-xs text-gray-400 min-w-[180px] text-center" x-text="weekLabel"></span>
+    <button @click="changeWeek(1)"
+            :disabled="!nextWeekExists"
+            class="text-gray-400 hover:text-white disabled:opacity-30 bg-gray-800 hover:bg-gray-700 disabled:hover:bg-gray-800 px-2.5 py-1.5 rounded-lg transition text-sm">
+      →
+    </button>
     <button @click="loadQueue()"
             class="text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">
-      ↺ Atualizar
+      ↺
+    </button>
+    <button @click="refreshMetrics()"
+            :disabled="refreshingMetrics"
+            class="text-xs text-gray-400 hover:text-white disabled:opacity-40 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+      <span x-show="refreshingMetrics" class="spin inline-block w-3 h-3 border border-gray-600 border-t-amber-400 rounded-full"></span>
+      <span x-text="refreshingMetrics ? 'Buscando...' : '📊 Métricas'"></span>
     </button>
   </div>
 </header>
@@ -49,6 +65,11 @@
             :class="tab==='single' ? 'border-b-2 border-amber-400 text-amber-400' : 'text-gray-400 hover:text-white'"
             class="px-4 py-3 text-sm font-medium transition">
       Producao Avulsa
+    </button>
+    <button @click="tab='library'; loadLibrary()"
+            :class="tab==='library' ? 'border-b-2 border-amber-400 text-amber-400' : 'text-gray-400 hover:text-white'"
+            class="px-4 py-3 text-sm font-medium transition">
+      Biblioteca
     </button>
   </div>
 </nav>
@@ -70,7 +91,7 @@
     <p class="text-3xl mb-2">📭</p>
     <p class="font-semibold text-gray-300 mb-1">Nenhuma fila para esta semana</p>
     <p class="text-sm text-gray-500 mb-4">Crie a fila e preencha as narracoes para comecar</p>
-    <button @click="createWeek(false)"
+    <button @click="createWeek(weekOffset)"
             :disabled="creatingWeek"
             class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-sm px-5 py-2 rounded-lg transition">
       <span x-text="creatingWeek ? 'Criando...' : 'Criar fila desta semana'"></span>
@@ -85,7 +106,7 @@
       <p class="text-xs text-amber-600 mt-0.5"
          x-text="'Semana ' + (nextWeek?.iso_week||'') + ' — crie agora e preencha as narracoes no Cowork'"></p>
     </div>
-    <button @click="createWeek(true)"
+    <button @click="createWeek(weekOffset + 1)"
             :disabled="creatingWeek"
             class="flex-shrink-0 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs px-4 py-2 rounded-lg transition ml-4">
       <span x-text="creatingWeek ? 'Criando...' : 'Criar proxima semana'"></span>
@@ -130,6 +151,21 @@
           <p class="text-xs text-amber-300 truncate" x-text="jobs[entry.slug]?.message || ''"></p>
         </div>
 
+        <!-- Métricas -->
+        <div x-show="entry.metrics && entry.status==='done'" class="px-4 pb-1">
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1 text-gray-400">
+              👁 <span x-text="fmtNum(entry.metrics?.views)" class="text-gray-300 font-medium"></span>
+            </span>
+            <span class="flex items-center gap-1 text-gray-400">
+              👍 <span x-text="fmtNum(entry.metrics?.likes)" class="text-gray-300 font-medium"></span>
+            </span>
+            <span x-show="entry.metrics?.comments > 0" class="flex items-center gap-1 text-gray-400">
+              💬 <span x-text="fmtNum(entry.metrics?.comments)" class="text-gray-300 font-medium"></span>
+            </span>
+          </div>
+        </div>
+
         <!-- Error -->
         <div x-show="entry.status==='error' && entry.error_msg" class="px-4 pb-2">
           <p class="text-xs text-red-400 truncate" x-text="entry.error_msg"></p>
@@ -149,7 +185,14 @@
             Editar
           </button>
 
-          <button @click="produce(entry.slug)"
+          <button x-show="entry.status==='producing' && !jobs[entry.slug]"
+                  @click="resetProducing(entry.slug)"
+                  class="flex-1 text-xs font-semibold bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1.5 rounded-lg transition">
+            Resetar
+          </button>
+
+          <button x-show="entry.status !== 'producing' || jobs[entry.slug]"
+                  @click="produce(entry.slug)"
                   :disabled="!entry.narration || entry.status==='producing' || entry.status==='done'"
                   class="flex-1 text-xs font-semibold disabled:opacity-40 px-3 py-1.5 rounded-lg transition"
                   :class="entry.status==='done'
@@ -415,6 +458,118 @@
 </div><!-- end single tab -->
 
 
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- TAB: BIBLIOTECA                                                          -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='library'" class="p-6 max-w-7xl mx-auto">
+
+  <div class="flex items-center justify-between mb-5">
+    <h2 class="text-lg font-bold text-white">Videos Gerados</h2>
+    <button @click="loadLibrary()"
+            class="text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">
+      ↺ Atualizar
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div x-show="loadingLibrary" class="flex items-center gap-2 text-gray-400 py-8 justify-center">
+    <div class="spin w-5 h-5 border-2 border-gray-600 border-t-amber-400 rounded-full"></div>
+    Carregando...
+  </div>
+
+  <!-- Vazio -->
+  <div x-show="!loadingLibrary && library.length === 0"
+       class="bg-gray-900 border border-gray-700 rounded-xl p-10 text-center text-gray-500">
+    <p class="text-3xl mb-2">🎞</p>
+    <p>Nenhum video gerado ainda.</p>
+  </div>
+
+  <!-- Grid -->
+  <div x-show="!loadingLibrary && library.length > 0"
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <template x-for="v in library" :key="v.slug">
+      <div class="bg-gray-900 rounded-xl border border-gray-800 hover:border-gray-700 transition overflow-hidden">
+
+        <!-- Thumbnail / preview -->
+        <div class="relative bg-gray-800 aspect-[9/16] cursor-pointer group"
+             @click="v.has_video && openPreview(v)">
+          <video x-show="v.has_video"
+                 :src="'/api/video/' + v.slug + '/preview'"
+                 class="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition"
+                 preload="metadata" muted playsinline>
+          </video>
+          <div x-show="!v.has_video"
+               class="absolute inset-0 flex items-center justify-center text-gray-600 text-sm">
+            Sem video
+          </div>
+          <div x-show="v.has_video"
+               class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+            <div class="bg-black/60 rounded-full w-12 h-12 flex items-center justify-center">
+              <svg class="w-5 h-5 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="p-3">
+          <p class="text-sm font-semibold text-white truncate"
+             x-text="v.title || v.slug"></p>
+          <p x-show="v.title" class="text-xs text-gray-500 truncate mt-0.5" x-text="v.slug"></p>
+          <div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
+            <span x-text="v.date ? formatDate(v.date) : v.created"></span>
+            <span x-show="v.size_mb" x-text="'· ' + v.size_mb + ' MB'"></span>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <a :href="'/api/download/' + v.slug"
+               class="flex-1 text-center text-xs bg-amber-500 hover:bg-amber-400 text-black font-semibold py-1.5 rounded-lg transition">
+              Baixar
+            </a>
+            <a x-show="v.youtube_url" :href="v.youtube_url" target="_blank"
+               class="flex-1 text-center text-xs bg-red-900/40 hover:bg-red-900/60 text-red-300 py-1.5 rounded-lg transition">
+              Ver YT
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  <!-- Modal player -->
+  <div x-show="previewVideo" x-transition
+       class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+       @click.self="closePreview()">
+    <div class="relative bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl overflow-hidden"
+         style="max-width:360px; width:100%">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+        <p class="text-sm font-semibold text-white truncate"
+           x-text="previewVideo?.title || previewVideo?.slug || ''"></p>
+        <button @click="closePreview()" class="text-gray-500 hover:text-white text-xl leading-none ml-3">&times;</button>
+      </div>
+      <video x-show="previewVideo"
+             :src="previewVideo ? '/api/video/' + previewVideo.slug + '/preview' : ''"
+             controls autoplay playsinline
+             class="w-full"
+             style="max-height:70vh; background:#000">
+      </video>
+      <div class="flex gap-2 p-3">
+        <a :href="previewVideo ? '/api/download/' + previewVideo.slug : '#'"
+           class="flex-1 text-center text-sm bg-amber-500 hover:bg-amber-400 text-black font-semibold py-2 rounded-lg transition">
+          Baixar MP4
+        </a>
+        <a x-show="previewVideo?.youtube_url" :href="previewVideo?.youtube_url || '#'" target="_blank"
+           class="flex-1 text-center text-sm bg-red-900/40 hover:bg-red-900/60 text-red-300 py-2 rounded-lg transition">
+          Ver no YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end library tab -->
+
+
 <!-- ── SCRIPT ──────────────────────────────────────────────────────────────── -->
 <script>
 function app() {
@@ -424,6 +579,9 @@ function app() {
     // Queue
     entries: [],
     weekLabel: '',
+    weekOffset: 0,
+    nextWeekExists: false,
+    prevWeekExists: false,
     loadingQueue: true,
     editingSlug: null,
     editForm: {},
@@ -434,6 +592,7 @@ function app() {
     nextWeek: null,
     creatingWeek: false,
     weekCreated: false,
+    refreshingMetrics: false,
 
     // Single
     singleStep: 1,
@@ -441,6 +600,11 @@ function app() {
     preparing: false,
     singleJob: {},
     singlePollTimer: null,
+
+    // Library
+    library: [],
+    loadingLibrary: false,
+    previewVideo: null,
 
     async init() {
       await this.loadQueue()
@@ -451,21 +615,30 @@ function app() {
     async loadQueue() {
       this.loadingQueue = true
       try {
-        const r = await fetch('/api/queue')
+        const r = await fetch(`/api/queue?week_offset=${this.weekOffset}`)
         const d = await r.json()
-        this.entries  = d.entries || []
-        this.nextWeek = d.next_week || null
+        this.entries       = d.entries || []
+        this.nextWeek      = d.next_week || null
+        this.nextWeekExists = d.next_week?.exists || false
+        this.prevWeekExists = d.prev_week?.exists || false
         const mon = this.mondayOf(d.iso_year, d.iso_week)
         const sun = new Date(mon); sun.setDate(mon.getDate()+6)
-        this.weekLabel = `Semana ${d.iso_week} | ${this.fmt(mon)} - ${this.fmt(sun)}`
+        const label = `Semana ${d.iso_week} | ${this.fmt(mon)} - ${this.fmt(sun)}`
+        this.weekLabel = this.weekOffset === 0 ? label : (this.weekOffset > 0 ? `▶ ${label}` : `◀ ${label}`)
       } catch(e) { console.error(e) }
       this.loadingQueue = false
     },
 
-    async createWeek(nextWeek) {
+    async changeWeek(delta) {
+      this.weekOffset += delta
+      this.weekCreated = false
+      await this.loadQueue()
+    },
+
+    async createWeek(offset) {
       this.creatingWeek = true
       try {
-        const r = await fetch(`/api/queue/create-week?next_week=${nextWeek}`, { method:'POST' })
+        const r = await fetch(`/api/queue/create-week?week_offset=${offset}`, { method:'POST' })
         if (r.ok) { this.weekCreated = true; await this.loadQueue() }
         else { alert('Erro ao criar fila') }
       } catch(e) { alert('Erro: ' + e) }
@@ -518,6 +691,33 @@ function app() {
         const d = await r.json()
         this.translatedText = d.translated || 'Sem resultado.'
       } catch(e) { this.translatedText = 'Erro ao traduzir.' }
+    },
+
+    async refreshMetrics() {
+      this.refreshingMetrics = true
+      try {
+        const r = await fetch(`/api/metrics/refresh?week_offset=${this.weekOffset}`, { method: 'POST' })
+        const d = await r.json()
+        if (!r.ok) { alert(d.detail || 'Erro ao buscar métricas'); return }
+        await this.loadQueue()
+        if (d.updated === 0) alert(d.message || 'Nenhuma métrica atualizada.')
+      } catch(e) { alert('Erro: ' + e) }
+      this.refreshingMetrics = false
+    },
+
+    fmtNum(n) {
+      if (n == null) return '—'
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
+      if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K'
+      return String(n)
+    },
+
+    async resetProducing(slug) {
+      try {
+        const r = await fetch(`/api/queue/${slug}/reset`, { method:'POST' })
+        if (r.ok) await this.loadQueue()
+        else { const d=await r.json(); alert(d.detail||'Erro') }
+      } catch(e) { alert('Erro: ' + e) }
     },
 
     async produce(slug) {
@@ -656,6 +856,18 @@ function app() {
       this.singleJob  = {}
       this.single     = { topic:'', narration:'', num_takes:12, duration:75, voice:'rachel', takes:[], translated:'' }
     },
+
+    // ── Library
+    async loadLibrary() {
+      this.loadingLibrary = true
+      try {
+        const r = await fetch('/api/videos')
+        this.library = await r.json()
+      } catch(e) { console.error(e) }
+      this.loadingLibrary = false
+    },
+    openPreview(v) { this.previewVideo = v },
+    closePreview()  { this.previewVideo = null },
   }
 }
 </script>

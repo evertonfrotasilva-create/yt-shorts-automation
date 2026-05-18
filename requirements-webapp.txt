@@ -1,0 +1,8 @@
+# Webapp local — python webapp.py
+# Inclui todas as dependências do pipeline
+-r requirements.txt
+
+fastapi>=0.111
+uvicorn[standard]>=0.29
+pydantic>=2.7
+deep-translator>=1.11
