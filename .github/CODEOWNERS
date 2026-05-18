@@ -1,0 +1,6 @@
+# Todos os arquivos requerem aprovação do owner antes de merge
+* @evertonfrotasilva-create
+
+# Workflow e secrets são críticos — revisão obrigatória
+.github/workflows/ @evertonfrotasilva-create
+.github/dependabot.yml @evertonfrotasilva-create

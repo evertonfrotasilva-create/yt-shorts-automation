@@ -50,11 +50,76 @@ STOP_WORDS = {
 }
 
 FALLBACK_QUERIES = [
-    "money dark cinematic", "brain neurons glowing dark", "person thinking decision dark",
-    "savings coins growing dark", "success wealth ambition dark", "habits routine dark",
+    "money cash bills dark cinematic", "brain neurons glowing dark",
+    "person thinking decision dark", "savings coins growing dark",
+    "success wealth ambition dark", "habits morning routine dark",
     "smartphone banking finance dark", "silhouette future success dark",
     "stress anxiety money dark", "procrastination lazy couch dark",
 ]
+
+# Mapeamento stem → query visual para Pexels
+# Chave = prefixo (stem) da palavra; valor = query com intenção visual clara
+CONCEPT_QUERIES = {
+    "sav":       "savings coins money jar dark cinematic",
+    "invest":    "investment stock market growth chart dark",
+    "debt":      "debt credit card bills stress dark",
+    "loan":      "loan debt signing papers dark",
+    "budget":    "budget planning finance notebook dark",
+    "retir":     "retirement freedom beach relax dark",
+    "salary":    "salary paycheck money raise dark",
+    "income":    "income paycheck cash money dark",
+    "wealth":    "wealth luxury success mansion dark",
+    "rich":      "wealthy luxury success dark cinematic",
+    "broke":     "broke empty wallet poverty stress dark",
+    "spend":     "shopping spending cart money dark",
+    "inflat":    "grocery store price increase dark",
+    "habit":     "morning routine daily habit dark",
+    "mindset":   "brain mindset thinking focus dark",
+    "decis":     "decision crossroads choice path dark",
+    "stress":    "stress anxiety shadow dark",
+    "fear":      "fear anxiety dark shadow",
+    "freedom":   "freedom success open road bright",
+    "bank":      "bank building finance professional dark",
+    "mortgag":   "house real estate property dark",
+    "stock":     "stock market trading screen dark",
+    "market":    "financial market chart trading dark",
+    "emerg":     "emergency fund safety security dark",
+    "compound":  "compound interest growth exponential dark",
+    "automat":   "automation system technology dark",
+    "disciplin": "discipline focus determination dark",
+    "credit":    "credit card payment dark cinematic",
+    "paycheck":  "paycheck salary envelope money dark",
+    "money":     "money cash bills wallet dark cinematic",
+    "financ":    "finance professional money dark cinematic",
+    "percent":   "percentage statistics numbers chart dark",
+    "rule":      "rules book law text dark",
+    "strateg":   "strategy planning success dark",
+    "motivat":   "motivation energy determination dark",
+    "success":   "success achievement celebration dark",
+    "fail":      "failure disappointment dark cinematic",
+    "goal":      "goal target achievement dark",
+    "brain":     "brain neuron thinking psychology dark",
+    "psychol":   "psychology brain mental dark cinematic",
+    "behav":     "behavior choice decision dark",
+    "procrast":  "procrastination lazy couch dark",
+    "raise":     "salary raise promotion success dark",
+    "earn":      "earning money income work dark",
+    "work":      "work professional office dark cinematic",
+    "employ":    "employment job career dark",
+    "boss":      "boss office corporate dark",
+    "freelanc":  "freelance remote work laptop dark",
+    "passive":   "passive income stream money dark",
+    "asset":     "assets wealth portfolio dark",
+    "liabil":    "liability debt financial dark",
+    "profit":    "profit growth success chart dark",
+    "loss":      "loss failure financial dark",
+    "number":    "finance numbers calculator dark",
+    "future":    "future success vision dark cinematic",
+    "time":      "time clock urgency dark cinematic",
+    "trust":     "trust handshake professional dark",
+    "build":     "building construction growth dark",
+    "system":    "organized system process dark",
+}
 
 
 # ── Fila ──────────────────────────────────────────────────────────────────────
@@ -127,11 +192,18 @@ def generate_narration(text: str, voice: str, out_path: Path):
 # ── Shotlist automático ───────────────────────────────────────────────────────
 
 def _extract_query(text: str, index: int) -> str:
-    words = text.lower().split()
-    kw = [w.strip(".,!?;:'\"") for w in words
-          if len(w) > 4 and w.strip(".,!?;:'\"") not in STOP_WORDS]
-    top = kw[:3]
-    return (" ".join(top) + " dark cinematic") if top else FALLBACK_QUERIES[index % len(FALLBACK_QUERIES)]
+    clean = re.sub(r"[^a-z\s]", "", text.lower())
+    words = clean.split()
+    # 1. Stem-based concept map — percorre todas as palavras do take
+    for word in words:
+        for stem, query in CONCEPT_QUERIES.items():
+            if word.startswith(stem):
+                return query
+    # 2. Keyword extraction com palavras longas e não-stop
+    kw = [w for w in words if len(w) > 5 and w not in STOP_WORDS]
+    if len(kw) >= 2:
+        return " ".join(kw[:3]) + " dark cinematic"
+    return FALLBACK_QUERIES[index % len(FALLBACK_QUERIES)]
 
 
 def _make_subtitle(text: str) -> str:

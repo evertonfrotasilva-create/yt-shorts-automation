@@ -81,16 +81,86 @@ STOP_WORDS = {
     "what","when","who","which","while","after","before","every",
 }
 FALLBACK_QUERIES = [
-    "money dark cinematic","brain neurons glowing dark","person thinking decision dark",
-    "savings coins growing dark","success wealth ambition dark","habits routine dark",
-    "smartphone banking finance dark","silhouette future success dark",
+    "money cash bills dark cinematic", "brain neurons glowing dark",
+    "person thinking decision dark", "savings coins growing dark",
+    "success wealth ambition dark", "habits morning routine dark",
+    "smartphone banking finance dark", "silhouette future success dark",
+    "stress anxiety money dark", "procrastination lazy couch dark",
 ]
 
+CONCEPT_QUERIES = {
+    "sav":       "savings coins money jar dark cinematic",
+    "invest":    "investment stock market growth chart dark",
+    "debt":      "debt credit card bills stress dark",
+    "loan":      "loan debt signing papers dark",
+    "budget":    "budget planning finance notebook dark",
+    "retir":     "retirement freedom beach relax dark",
+    "salary":    "salary paycheck money raise dark",
+    "income":    "income paycheck cash money dark",
+    "wealth":    "wealth luxury success mansion dark",
+    "rich":      "wealthy luxury success dark cinematic",
+    "broke":     "broke empty wallet poverty stress dark",
+    "spend":     "shopping spending cart money dark",
+    "inflat":    "grocery store price increase dark",
+    "habit":     "morning routine daily habit dark",
+    "mindset":   "brain mindset thinking focus dark",
+    "decis":     "decision crossroads choice path dark",
+    "stress":    "stress anxiety shadow dark",
+    "fear":      "fear anxiety dark shadow",
+    "freedom":   "freedom success open road bright",
+    "bank":      "bank building finance professional dark",
+    "mortgag":   "house real estate property dark",
+    "stock":     "stock market trading screen dark",
+    "market":    "financial market chart trading dark",
+    "emerg":     "emergency fund safety security dark",
+    "compound":  "compound interest growth exponential dark",
+    "automat":   "automation system technology dark",
+    "disciplin": "discipline focus determination dark",
+    "credit":    "credit card payment dark cinematic",
+    "paycheck":  "paycheck salary envelope money dark",
+    "money":     "money cash bills wallet dark cinematic",
+    "financ":    "finance professional money dark cinematic",
+    "percent":   "percentage statistics numbers chart dark",
+    "rule":      "rules book law text dark",
+    "strateg":   "strategy planning success dark",
+    "motivat":   "motivation energy determination dark",
+    "success":   "success achievement celebration dark",
+    "fail":      "failure disappointment dark cinematic",
+    "goal":      "goal target achievement dark",
+    "brain":     "brain neuron thinking psychology dark",
+    "psychol":   "psychology brain mental dark cinematic",
+    "behav":     "behavior choice decision dark",
+    "procrast":  "procrastination lazy couch dark",
+    "raise":     "salary raise promotion success dark",
+    "earn":      "earning money income work dark",
+    "employ":    "employment job career dark",
+    "boss":      "boss office corporate dark",
+    "freelanc":  "freelance remote work laptop dark",
+    "passive":   "passive income stream money dark",
+    "asset":     "assets wealth portfolio dark",
+    "liabil":    "liability debt financial dark",
+    "profit":    "profit growth success chart dark",
+    "loss":      "loss failure financial dark",
+    "future":    "future success vision dark cinematic",
+    "time":      "time clock urgency dark cinematic",
+    "trust":     "trust handshake professional dark",
+    "build":     "building construction growth dark",
+    "system":    "organized system process dark",
+}
+
 def _extract_query(text: str, idx: int) -> str:
-    words = text.lower().split()
-    kw = [w.strip(".,!?;:'\"") for w in words
-          if len(w) > 4 and w.strip(".,!?;:'\"") not in STOP_WORDS]
-    return (" ".join(kw[:3]) + " dark cinematic") if kw else FALLBACK_QUERIES[idx % len(FALLBACK_QUERIES)]
+    clean = re.sub(r"[^a-z\s]", "", text.lower())
+    words = clean.split()
+    # 1. Stem-based concept map — percorre todas as palavras do take
+    for word in words:
+        for stem, query in CONCEPT_QUERIES.items():
+            if word.startswith(stem):
+                return query
+    # 2. Keyword extraction com palavras longas e não-stop
+    kw = [w for w in words if len(w) > 5 and w not in STOP_WORDS]
+    if len(kw) >= 2:
+        return " ".join(kw[:3]) + " dark cinematic"
+    return FALLBACK_QUERIES[idx % len(FALLBACK_QUERIES)]
 
 def _subtitle(text: str) -> str:
     words = text.split()
@@ -251,37 +321,54 @@ def _assemble_video(work_dir: Path, takes: list, narr_path: Path,
     return out
 
 
-def _upload_youtube(video_path: Path, entry: dict) -> str:
+YOUTUBE_SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+]
+
+def _load_youtube_creds():
     import pickle
     from google_auth_oauthlib.flow import InstalledAppFlow
     from google.auth.transport.requests import Request
-    from googleapiclient.discovery import build
-    from googleapiclient.http import MediaFileUpload
 
-    SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-    token_file = BASE_DIR / "youtube_token.pkl"
+    token_file   = BASE_DIR / "youtube_token.pkl"
     secrets_file = BASE_DIR / "youtube_client_secrets.json"
 
     if not secrets_file.exists():
         secrets_file.write_text(json.dumps({"installed": {
-            "client_id":     os.getenv("YOUTUBE_CLIENT_ID",""),
-            "client_secret": os.getenv("YOUTUBE_CLIENT_SECRET",""),
-            "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob","http://localhost"],
+            "client_id":     os.getenv("YOUTUBE_CLIENT_ID", ""),
+            "client_secret": os.getenv("YOUTUBE_CLIENT_SECRET", ""),
+            "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob", "http://localhost"],
             "auth_uri":  "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
         }}))
 
     creds = None
     if token_file.exists():
-        with open(token_file, "rb") as f: creds = pickle.load(f)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token: creds.refresh(Request())
-        else:
-            flow  = InstalledAppFlow.from_client_secrets_file(str(secrets_file), SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open(token_file, "wb") as f: pickle.dump(creds, f)
+        with open(token_file, "rb") as f:
+            creds = pickle.load(f)
+        # Regenera se o token não tiver os dois escopos necessários
+        token_scopes = set(creds.scopes or [])
+        if not set(YOUTUBE_SCOPES).issubset(token_scopes):
+            creds = None
 
-    yt  = build("youtube", "v3", credentials=creds)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow  = InstalledAppFlow.from_client_secrets_file(str(secrets_file), YOUTUBE_SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(token_file, "wb") as f:
+            pickle.dump(creds, f)
+
+    return creds
+
+
+def _upload_youtube(video_path: Path, entry: dict) -> str:
+    from googleapiclient.discovery import build
+    from googleapiclient.http import MediaFileUpload
+
+    yt  = build("youtube", "v3", credentials=_load_youtube_creds())
     brt = timezone(timedelta(hours=-3))
     today = date.today()
     ph  = entry.get("publish_hour_brt", 18)
@@ -444,25 +531,42 @@ def _create_queue_file(target: date, overwrite: bool = False) -> Path:
     return qf
 
 
-@app.get("/api/queue")
-async def get_queue():
-    today   = date.today()
-    qf      = _queue_file_for(today)
-    entries = _read_queue(qf)
-    y, w, _ = today.isocalendar()
+def _find_queue_for_slug(slug: str):
+    """Busca o arquivo de fila e entries que contém o slug."""
+    for qf in sorted(QUEUE_DIR.glob("*.json"), reverse=True):
+        entries = _read_queue(qf)
+        if any(e["slug"] == slug for e in entries):
+            return qf, entries
+    return None, None
 
-    # Verifica se a próxima semana tem fila
-    next_week   = today + timedelta(weeks=1)
+
+@app.get("/api/queue")
+async def get_queue(week_offset: int = 0):
+    target  = date.today() + timedelta(weeks=week_offset)
+    qf      = _queue_file_for(target)
+    entries = _read_queue(qf)
+    y, w, _ = target.isocalendar()
+
+    next_week   = target + timedelta(weeks=1)
     ny, nw, _   = next_week.isocalendar()
     next_qf     = _queue_file_for(next_week)
     next_monday = _monday_of_week(ny, nw)
 
+    prev_week   = target - timedelta(weeks=1)
+    py, pw, _   = prev_week.isocalendar()
+    prev_qf     = _queue_file_for(prev_week)
+
     return JSONResponse({
-        "week_file": qf.name, "iso_week": w, "iso_year": y, "entries": entries,
+        "week_file": qf.name, "iso_week": w, "iso_year": y,
+        "entries": entries, "week_offset": week_offset,
         "next_week": {
             "iso_week": nw, "iso_year": ny,
             "exists": next_qf.exists(),
             "monday": next_monday.isoformat(),
+        },
+        "prev_week": {
+            "iso_week": pw, "iso_year": py,
+            "exists": prev_qf.exists(),
         },
     })
 
@@ -477,23 +581,22 @@ class QueueEntryUpdate(BaseModel):
 
 @app.put("/api/queue/{slug}")
 async def update_queue_entry(slug: str, req: QueueEntryUpdate):
-    qf      = _queue_file_for(date.today())
-    entries = _read_queue(qf)
+    qf, entries = _find_queue_for_slug(slug)
+    if qf is None:
+        raise HTTPException(status_code=404, detail=f"Entrada {slug} não encontrada")
     for e in entries:
         if e["slug"] == slug:
             e.update(req.model_dump())
             _write_queue(qf, entries)
             return JSONResponse({"ok": True})
-    raise HTTPException(status_code=404, detail=f"Entrada {slug} não encontrada")
 
 
 @app.post("/api/queue/{slug}/produce")
 async def produce_queue_entry(slug: str):
-    qf      = _queue_file_for(date.today())
-    entries = _read_queue(qf)
-    entry   = next((e for e in entries if e["slug"] == slug), None)
-    if not entry:
+    qf, entries = _find_queue_for_slug(slug)
+    if qf is None:
         raise HTTPException(status_code=404, detail=f"Entrada {slug} não encontrada")
+    entry = next((e for e in entries if e["slug"] == slug), None)
     if not entry.get("narration","").strip():
         raise HTTPException(status_code=422, detail="Narração vazia — preencha antes de produzir")
     if entry.get("status") == "producing":
@@ -509,9 +612,24 @@ async def produce_queue_entry(slug: str):
     return JSONResponse({"job_id": job_id})
 
 
+@app.post("/api/queue/{slug}/reset")
+async def reset_queue_entry(slug: str):
+    qf, entries = _find_queue_for_slug(slug)
+    if qf is None:
+        raise HTTPException(status_code=404, detail=f"Entrada {slug} não encontrada")
+    for e in entries:
+        if e["slug"] == slug:
+            if e.get("status") != "producing":
+                raise HTTPException(status_code=409, detail="Status não é 'producing'")
+            e["status"]    = "pending"
+            e["error_msg"] = ""
+    _write_queue(qf, entries)
+    return JSONResponse({"ok": True})
+
+
 @app.post("/api/queue/create-week")
-async def create_week(next_week: bool = False):
-    target = date.today() + (timedelta(weeks=1) if next_week else timedelta(0))
+async def create_week(week_offset: int = 0):
+    target = date.today() + timedelta(weeks=week_offset)
     qf = _create_queue_file(target)
     y, w, _ = target.isocalendar()
     return JSONResponse({"ok": True, "file": qf.name, "iso_week": w, "iso_year": y})
@@ -589,18 +707,77 @@ async def get_status(job_id: str):
     return JSONResponse(job)
 
 
+@app.post("/api/metrics/refresh")
+async def refresh_metrics(week_offset: int = 0):
+    from googleapiclient.discovery import build
+
+    target  = date.today() + timedelta(weeks=week_offset)
+    qf      = _queue_file_for(target)
+    entries = _read_queue(qf)
+    if not entries:
+        raise HTTPException(status_code=404, detail="Fila não encontrada para esta semana")
+
+    done = [e for e in entries if e.get("status") == "done" and e.get("video_id")]
+    if not done:
+        return JSONResponse({"ok": True, "updated": 0, "message": "Nenhum vídeo publicado esta semana"})
+
+    try:
+        yt       = build("youtube", "v3", credentials=_load_youtube_creds())
+        ids      = [e["video_id"] for e in done]
+        response = yt.videos().list(part="statistics", id=",".join(ids)).execute()
+
+        stats_map = {item["id"]: item.get("statistics", {}) for item in response.get("items", [])}
+
+        updated = 0
+        for e in entries:
+            vid_id = e.get("video_id")
+            if vid_id and vid_id in stats_map:
+                s = stats_map[vid_id]
+                e["metrics"] = {
+                    "views":      int(s.get("viewCount",    0)),
+                    "likes":      int(s.get("likeCount",    0)),
+                    "comments":   int(s.get("commentCount", 0)),
+                    "fetched_at": datetime.now().isoformat(),
+                }
+                updated += 1
+
+        _write_queue(qf, entries)
+        return JSONResponse({"ok": True, "updated": updated})
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def _queue_meta_index() -> dict:
+    """Retorna dict slug -> {title, youtube_url, date} lendo todos os arquivos de fila."""
+    index = {}
+    for qf in QUEUE_DIR.glob("*.json"):
+        for e in _read_queue(qf):
+            index[e["slug"]] = {
+                "title":       e.get("title") or "",
+                "youtube_url": e.get("youtube_url") or "",
+                "date":        e.get("date") or "",
+            }
+    return index
+
+
 @app.get("/api/videos")
 async def list_videos():
+    meta  = _queue_meta_index()
     videos = []
     if OUTPUT_DIR.exists():
-        for folder in sorted(OUTPUT_DIR.iterdir(), reverse=True):
+        for folder in sorted(OUTPUT_DIR.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
             if not folder.is_dir(): continue
             final = folder / "final_video.mp4"
+            m = meta.get(folder.name, {})
             videos.append({
-                "slug": folder.name,
-                "has_video": final.exists(),
-                "size_mb": round(final.stat().st_size/1024/1024,1) if final.exists() else None,
-                "created": datetime.fromtimestamp(folder.stat().st_mtime).strftime("%d/%m %H:%M"),
+                "slug":        folder.name,
+                "has_video":   final.exists(),
+                "size_mb":     round(final.stat().st_size/1024/1024, 1) if final.exists() else None,
+                "created":     datetime.fromtimestamp(folder.stat().st_mtime).strftime("%d/%m %H:%M"),
+                "title":       m.get("title", ""),
+                "youtube_url": m.get("youtube_url", ""),
+                "date":        m.get("date", ""),
             })
     return JSONResponse(videos)
 
@@ -611,6 +788,14 @@ async def download_video(slug: str):
     if not path.exists():
         raise HTTPException(status_code=404, detail="Vídeo não encontrado")
     return FileResponse(str(path), media_type="video/mp4", filename=f"{slug}_final.mp4")
+
+
+@app.get("/api/video/{slug}/preview")
+async def preview_video(slug: str):
+    path = OUTPUT_DIR / slug / "final_video.mp4"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Vídeo não encontrado")
+    return FileResponse(str(path), media_type="video/mp4")
 
 
 # ── Static + index ─────────────────────────────────────────────────────────────
@@ -634,4 +819,4 @@ if __name__ == "__main__":
     print("  http://localhost:8080")
     print("=" * 50)
     webbrowser.open("http://localhost:8080")
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="warning")
+    uvicorn.run(app, host="127.0.0.1", port=8080, log_level="warning")
