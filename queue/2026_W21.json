@@ -23,11 +23,8 @@
       "financial habits"
     ],
     "publish_hour_brt": 18,
-    "status": "done",
-    "error_msg": "",
-    "video_id": "odu98-XRqe4",
-    "youtube_url": "https://www.youtube.com/shorts/odu98-XRqe4",
-    "produced_at": "2026-05-18T16:46:50.671830"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "tuesday",
@@ -55,9 +52,9 @@
     "publish_hour_brt": 18,
     "status": "done",
     "error_msg": "",
-    "video_id": "ucw_mJxoFrE",
-    "youtube_url": "https://www.youtube.com/shorts/ucw_mJxoFrE",
-    "produced_at": "2026-05-19T03:05:47.691139"
+    "video_id": "8o7roUrKlLc",
+    "youtube_url": "https://www.youtube.com/shorts/8o7roUrKlLc",
+    "produced_at": "2026-05-19T00:07:17.728719"
   },
   {
     "day": "wednesday",
@@ -83,8 +80,11 @@
       "money psychology"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "HLzA_YTPkpI",
+    "youtube_url": "https://www.youtube.com/shorts/HLzA_YTPkpI",
+    "produced_at": "2026-05-19T00:20:12.894458"
   },
   {
     "day": "thursday",
