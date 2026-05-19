@@ -1,0 +1,75 @@
+name: Weekly Agents
+
+# Toda domingo às 20h UTC (17h BRT) — gera a fila da próxima semana
+on:
+  schedule:
+    - cron: '0 20 * * 0'
+  workflow_dispatch:
+    inputs:
+      skip_analyst:
+        description: 'Pular Performance Analyst (usar relatório existente)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.11'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  generate:
+    name: Generate Weekly Scripts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Rodar agentes (Analyst + Writer)
+        env:
+          ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
+          YOUTUBE_CLIENT_ID:     ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          SKIP_FLAG=""
+          if [ "${{ inputs.skip_analyst }}" = "true" ]; then
+            SKIP_FLAG="--skip-analyst"
+          fi
+          python agents/run_weekly.py $SKIP_FLAG
+
+      - name: Salvar fila gerada no repo
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
+          git add queue/ agents/data/
+          git diff --staged --quiet || git commit -m "auto: fila semana $(date +%Y-W%V) gerada por IA"
+          git push
+
+      - name: Notificar falha
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue create \
+            --title "[FALHA] Agentes semanais -- $(date +%Y-%m-%d)" \
+            --body "Geracao automatica de roteiros falhou. Log: ${RUN_URL}" \
+            --repo "${{ github.repository }}" || true

@@ -100,38 +100,76 @@
 
   <!-- Banner: próxima semana sem fila -->
   <div x-show="!loadingQueue && entries.length>0 && nextWeek && !nextWeek.exists"
-       class="mb-4 bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-center justify-between">
+       class="mb-4 bg-amber-950/40 border border-amber-800/50 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
     <div>
       <p class="text-sm font-semibold text-amber-300">Proxima semana sem fila</p>
       <p class="text-xs text-amber-600 mt-0.5"
-         x-text="'Semana ' + (nextWeek?.iso_week||'') + ' — crie agora e preencha as narracoes no Cowork'"></p>
+         x-text="'Semana ' + (nextWeek?.iso_week||'') + ' — 21 roteiros (3/dia) gerados automaticamente pela IA'"></p>
     </div>
-    <button @click="createWeek(weekOffset + 1)"
-            :disabled="creatingWeek"
-            class="flex-shrink-0 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs px-4 py-2 rounded-lg transition ml-4">
-      <span x-text="creatingWeek ? 'Criando...' : 'Criar proxima semana'"></span>
-    </button>
+    <div class="flex gap-2 flex-shrink-0">
+      <button @click="generateWeekAI(weekOffset + 1)"
+              :disabled="generatingWeek"
+              class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+        <span x-show="generatingWeek" class="spin inline-block w-3 h-3 border border-black/30 border-t-black rounded-full"></span>
+        <span x-text="generatingWeek ? agentStatus : '✨ Gerar com IA (21 roteiros)'"></span>
+      </button>
+      <button @click="createWeek(weekOffset + 1)"
+              :disabled="generatingWeek"
+              title="Criar fila vazia para preencher manualmente"
+              class="flex-shrink-0 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 text-gray-300 text-xs px-3 py-2 rounded-lg transition">
+        Manual
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress do agente IA -->
+  <div x-show="generatingWeek" x-transition
+       class="mb-4 bg-gray-900 border border-amber-800/40 rounded-xl p-4">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="spin w-4 h-4 border-2 border-gray-600 border-t-amber-400 rounded-full flex-shrink-0"></div>
+      <p class="text-sm font-semibold text-amber-300">Agentes em execução</p>
+    </div>
+    <p class="text-xs text-gray-400 ml-7" x-text="agentStatus"></p>
+    <div class="mt-2 ml-7 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+      <div class="h-full bg-amber-400 rounded-full progress-bar" :style="'width:'+agentProgress+'%'"></div>
+    </div>
   </div>
 
   <!-- Confirmacao de criacao -->
   <div x-show="weekCreated" x-transition
        class="mb-4 bg-green-950/40 border border-green-800/50 rounded-xl p-3 text-sm text-green-300 flex items-center gap-2">
-    Fila criada! Preencha as narracoes de cada dia pelo botao Editar.
+    <span x-text="weekCreatedMsg || 'Fila criada!'"></span>
     <button @click="weekCreated=false" class="ml-auto text-green-600 hover:text-green-400">&times;</button>
   </div>
 
-  <!-- Grid de dias -->
-  <div x-show="!loadingQueue && entries.length>0"
-       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    <template x-for="entry in entries" :key="entry.slug">
-      <div class="bg-gray-900 rounded-xl border transition-all"
-           :class="cardBorder(entry)">
+  <!-- Grid de dias (agrupa por data, suporta 1 ou 3 vídeos/dia) -->
+  <div x-show="!loadingQueue && entries.length>0" class="space-y-6">
+    <template x-for="dayGroup in dayGroups()" :key="dayGroup.date">
+      <div>
+        <!-- Cabeçalho do dia -->
+        <div class="flex items-center gap-3 mb-3">
+          <p class="text-sm font-bold text-gray-300" x-text="dayGroup.day_pt"></p>
+          <p class="text-xs text-gray-600" x-text="formatDate(dayGroup.date)"></p>
+          <div class="flex-1 h-px bg-gray-800"></div>
+          <p class="text-xs text-gray-600" x-text="dayGroup.entries.length + ' vídeo(s)'"></p>
+        </div>
+        <!-- Cards do dia -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <template x-for="entry in dayGroup.entries" :key="entry.slug">
+            <div class="bg-gray-900 rounded-xl border transition-all"
+                 :class="cardBorder(entry)">
 
         <!-- Card header -->
         <div class="p-4 pb-2">
           <div class="flex items-start justify-between mb-2">
             <div>
-              <p class="font-bold text-white text-base" x-text="entry.day_pt"></p>
+              <div class="flex items-center gap-2">
+                <p class="font-bold text-white text-base" x-text="entry.day_pt"></p>
+                <span x-show="entry.slot"
+                      class="text-xs font-mono bg-gray-800 text-amber-400 px-1.5 py-0.5 rounded"
+                      x-text="entry.slot ? entry.slot.toUpperCase() : ''"></span>
+                <span class="text-xs text-gray-600" x-text="entry.publish_hour_brt ? entry.publish_hour_brt+'h' : ''"></span>
+              </div>
               <p class="text-xs text-gray-500" x-text="formatDate(entry.date)"></p>
             </div>
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
@@ -206,8 +244,10 @@
             <span x-show="entry.status==='done'">Pronto</span>
           </button>
 
-        </div>
-      </div>
+          </div>
+        </template>
+      </div><!-- end cards do dia -->
+      </div><!-- end dayGroup -->
     </template>
   </div>
 
@@ -592,6 +632,10 @@ function app() {
     nextWeek: null,
     creatingWeek: false,
     weekCreated: false,
+    weekCreatedMsg: '',
+    generatingWeek: false,
+    agentStatus: '',
+    agentProgress: 0,
     refreshingMetrics: false,
 
     // Single
@@ -639,10 +683,65 @@ function app() {
       this.creatingWeek = true
       try {
         const r = await fetch(`/api/queue/create-week?week_offset=${offset}`, { method:'POST' })
-        if (r.ok) { this.weekCreated = true; await this.loadQueue() }
-        else { alert('Erro ao criar fila') }
+        if (r.ok) {
+          this.weekCreated = true
+          this.weekCreatedMsg = 'Fila vazia criada! Preencha as narracoes pelo botao Editar.'
+          await this.loadQueue()
+        } else { alert('Erro ao criar fila') }
       } catch(e) { alert('Erro: ' + e) }
       this.creatingWeek = false
+    },
+
+    async generateWeekAI(offset) {
+      this.generatingWeek = true
+      this.agentStatus = 'Iniciando agentes...'
+      this.agentProgress = 5
+      try {
+        const r = await fetch(`/api/agents/generate-week?week_offset=${offset}`, { method:'POST' })
+        if (!r.ok) {
+          const err = await r.json()
+          alert('Erro: ' + (err.detail || r.statusText))
+          this.generatingWeek = false
+          return
+        }
+        const { job_id } = await r.json()
+        const poll = setInterval(async () => {
+          try {
+            const jr = await fetch(`/api/produce/status/${job_id}`)
+            if (!jr.ok) return
+            const job = await jr.json()
+            this.agentStatus   = job.message || ''
+            this.agentProgress = job.progress || this.agentProgress
+            if (job.status === 'done') {
+              clearInterval(poll)
+              this.generatingWeek = false
+              this.weekCreated    = true
+              this.weekCreatedMsg = '21 roteiros gerados pela IA! Revise e clique Produzir em cada card.'
+              await this.loadQueue()
+            } else if (job.status === 'error') {
+              clearInterval(poll)
+              this.generatingWeek = false
+              alert('Erro nos agentes: ' + (job.error || job.message))
+            }
+          } catch(e) {}
+        }, 3000)
+      } catch(e) {
+        alert('Erro: ' + e)
+        this.generatingWeek = false
+      }
+    },
+
+    dayGroups() {
+      const groups = {}
+      const order  = []
+      for (const e of this.entries) {
+        if (!groups[e.date]) {
+          groups[e.date] = { date: e.date, day_pt: e.day_pt, entries: [] }
+          order.push(e.date)
+        }
+        groups[e.date].entries.push(e)
+      }
+      return order.map(d => groups[d])
     },
 
     startEdit(slug) {

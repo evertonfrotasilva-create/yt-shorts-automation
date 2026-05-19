@@ -1,0 +1,245 @@
+"""
+Script Writer Agent
+Usa Claude API para gerar 21 roteiros/semana (3 por dia),
+com horários de publicação otimizados pelo Performance Analyst.
+"""
+
+import os, json, sys
+from pathlib import Path
+from datetime import date, timedelta
+from dotenv import load_dotenv
+import anthropic
+
+BASE_DIR = Path(__file__).parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+DATA_DIR  = Path(__file__).parent / "data"
+QUEUE_DIR = BASE_DIR / "queue"
+
+DAYS_EN = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+DAYS_PT = ["Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"]
+SLUGS   = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+SLOTS   = ["a", "b", "c"]
+
+
+def _next_week_dates() -> list[dict]:
+    """Retorna os 7 dias da próxima semana com metadados."""
+    today   = date.today()
+    # próxima segunda-feira
+    days_until_monday = (7 - today.weekday()) % 7 or 7
+    next_monday = today + timedelta(days=days_until_monday)
+
+    days = []
+    for i in range(7):
+        d = next_monday + timedelta(days=i)
+        days.append({
+            "day":    DAYS_EN[i],
+            "day_pt": DAYS_PT[i],
+            "slug":   SLUGS[i],
+            "date":   d.isoformat(),
+            "mmdd":   d.strftime("%m%d"),
+        })
+    return days
+
+
+def _load_performance_report() -> dict:
+    report_file = DATA_DIR / "performance_report.json"
+    if report_file.exists():
+        return json.loads(report_file.read_text(encoding="utf-8"))
+    return {"best_hours": [8, 14, 20], "top_videos": [], "avg_views": 0, "videos": []}
+
+
+def _load_past_titles(weeks_back: int = 6) -> list[str]:
+    """Retorna títulos das últimas N semanas para evitar repetição."""
+    today = date.today()
+    titles = []
+    for i in range(weeks_back):
+        check = today - timedelta(weeks=i)
+        iso_year, iso_week, _ = check.isocalendar()
+        qf = QUEUE_DIR / f"{iso_year}_W{iso_week:02d}.json"
+        if not qf.exists():
+            continue
+        for e in json.loads(qf.read_text(encoding="utf-8")):
+            t = e.get("title", "").strip()
+            if t:
+                titles.append(t)
+    return titles
+
+
+def _build_prompt(report: dict, past_titles: list[str], week_dates: list[dict]) -> str:
+    best_hours = report.get("best_hours", [8, 14, 20])
+    top_videos = report.get("top_videos", [])
+    avg_views  = report.get("avg_views", 0)
+
+    top_section = ""
+    if top_videos:
+        top_section = "\n\nTop performing videos (use as reference for tone and topics):\n"
+        for v in top_videos[:5]:
+            top_section += f'- "{v["title"]}" — {v["views"]} views\n'
+
+    past_section = ""
+    if past_titles:
+        past_section = "\n\nTopics already covered (do NOT repeat these):\n"
+        for t in past_titles[-30:]:
+            past_section += f"- {t}\n"
+
+    week_info = f"Week of {week_dates[0]['date']} to {week_dates[6]['date']}"
+
+    return f"""You are a YouTube Shorts script writer for the channel "The Reality of Money by Rufino".
+
+CHANNEL BRIEF:
+- Niche: Personal finance education in English
+- Format: YouTube Shorts (~75 seconds, conversational)
+- Tone: Calm, insightful, slightly provocative — like a trusted mentor
+- Target audience: 25-40 year olds who feel stuck financially
+- Style rules:
+  * Open with a hook that challenges a common belief (first 3 seconds are critical)
+  * No fluff — every sentence must earn its place
+  * Use specific numbers and data when possible
+  * End with a question + "subscribe" CTA
+  * Never say "In this video" — start in medias res
+  * Avoid complex financial jargon
+  * Narration length: 180-210 words (reads in ~70-80 seconds at natural pace)
+
+PERFORMANCE DATA:
+- Best posting hours (BRT, highest to lowest engagement): {best_hours}
+- Channel average views: {avg_views}{top_section}{past_section}
+
+YOUR TASK:
+Generate 21 original YouTube Shorts scripts for {week_info}.
+3 videos per day, 7 days. Each video must be completely different in topic and angle.
+
+Distribute publish hours across the day using the best performing slots: {best_hours}
+Assign hour {best_hours[0]}h to slot "a" (morning), {best_hours[1] if len(best_hours) > 1 else 14}h to slot "b" (afternoon), {best_hours[2] if len(best_hours) > 2 else 20}h to slot "c" (evening).
+
+Personal finance topics to explore (pick the most engaging angles, don't be generic):
+- The psychology of spending, saving, and investing
+- Common money myths and rules that are broken or outdated
+- Specific strategies: debt payoff, investing, income, budgeting
+- Behavioral economics: why we make bad money decisions
+- Career and income: raises, side income, negotiation
+- Wealth mindset: how rich vs poor people think differently
+- Specific financial instruments: index funds, real estate, crypto (skeptical angle), etc.
+- Life stage finance: 20s, 30s, retirement planning
+
+Call the generate_weekly_queue tool with all 21 scripts."""
+
+
+def run(dry_run: bool = False) -> Path:
+    print("[Script Writer] Iniciando geração de roteiros...")
+
+    report      = _load_performance_report()
+    past_titles = _load_past_titles()
+    week_dates  = _next_week_dates()
+    best_hours  = report.get("best_hours", [8, 14, 20])
+
+    print(f"  Semana alvo: {week_dates[0]['date']} → {week_dates[6]['date']}")
+    print(f"  Horários de publicação: {best_hours}")
+    print(f"  {len(past_titles)} títulos anteriores carregados para evitar repetição")
+
+    if dry_run:
+        print("  DRY-RUN: prompt montado, sem chamar a API")
+        return None
+
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))
+
+    tool_def = {
+        "name": "generate_weekly_queue",
+        "description": "Output the complete 21-script weekly queue",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "entries": {
+                    "type": "array",
+                    "description": "21 video entries, 3 per day for 7 days",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "day":              {"type": "string", "description": "e.g. monday"},
+                            "slot":             {"type": "string", "enum": ["a", "b", "c"]},
+                            "title":            {"type": "string", "description": "Compelling title, max 80 chars"},
+                            "narration":        {"type": "string", "description": "Full script, 180-210 words"},
+                            "description":      {"type": "string", "description": "YouTube description, max 400 chars + hashtags"},
+                            "tags":             {"type": "array", "items": {"type": "string"}, "description": "8-10 tags"},
+                            "publish_hour_brt": {"type": "integer", "description": "Publishing hour in BRT timezone"},
+                        },
+                        "required": ["day", "slot", "title", "narration", "description", "tags", "publish_hour_brt"],
+                    },
+                    "minItems": 21,
+                    "maxItems": 21,
+                }
+            },
+            "required": ["entries"],
+        },
+    }
+
+    prompt = _build_prompt(report, past_titles, week_dates)
+
+    print("  Chamando Claude API (pode levar 1-2 minutos)...")
+    response = client.messages.create(
+        model="claude-opus-4-7",
+        max_tokens=16000,
+        thinking={"type": "adaptive"},
+        tools=[tool_def],
+        tool_choice={"type": "tool", "name": "generate_weekly_queue"},
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    # Extrai o tool_use block
+    tool_block = next((b for b in response.content if b.type == "tool_use"), None)
+    if not tool_block:
+        raise RuntimeError("Claude não retornou tool_use — resposta inesperada")
+
+    raw_entries = tool_block.input["entries"]
+    print(f"  {len(raw_entries)} roteiros gerados")
+
+    # Monta o JSON final da fila
+    iso_year, iso_week, _ = (date.fromisoformat(week_dates[0]["date"])).isocalendar()
+    queue_entries = []
+
+    day_map = {d["day"]: d for d in week_dates}
+    hour_by_slot = {"a": best_hours[0], "b": best_hours[1] if len(best_hours) > 1 else 14,
+                    "c": best_hours[2] if len(best_hours) > 2 else 20}
+
+    for e in raw_entries:
+        day_info = day_map.get(e["day"])
+        if not day_info:
+            continue
+        slot = e["slot"]
+        queue_entries.append({
+            "day":              e["day"],
+            "day_pt":           day_info["day_pt"],
+            "date":             day_info["date"],
+            "slot":             slot,
+            "slug":             f"video_{day_info['slug']}_{day_info['mmdd']}_{slot}",
+            "narration":        e["narration"],
+            "num_takes":        12,
+            "duration":         75,
+            "voice":            "rachel",
+            "title":            e["title"],
+            "description":      e["description"],
+            "tags":             e.get("tags", []),
+            "publish_hour_brt": e.get("publish_hour_brt", hour_by_slot.get(slot, 18)),
+            "status":           "pending",
+            "error_msg":        "",
+        })
+
+    # Ordena: segunda a domingo, slot a→b→c
+    slot_order = {"a": 0, "b": 1, "c": 2}
+    queue_entries.sort(key=lambda e: (DAYS_EN.index(e["day"]), slot_order.get(e["slot"], 0)))
+
+    queue_file = QUEUE_DIR / f"{iso_year}_W{iso_week:02d}.json"
+    if queue_file.exists():
+        backup = queue_file.with_suffix(f".bak.json")
+        backup.write_text(queue_file.read_text(encoding="utf-8"), encoding="utf-8")
+        print(f"  Backup criado: {backup.name}")
+
+    queue_file.write_text(json.dumps(queue_entries, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"  Fila salva: {queue_file.name} ({len(queue_entries)} entradas)")
+
+    return queue_file
+
+
+if __name__ == "__main__":
+    dry = "--dry-run" in sys.argv
+    run(dry_run=dry)

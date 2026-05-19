@@ -642,10 +642,52 @@ async def reset_queue_entry(slug: str):
 
 @app.post("/api/queue/create-week")
 async def create_week(week_offset: int = 0):
+    """Cria fila vazia (formato legado, sem agentes)."""
     target = date.today() + timedelta(weeks=week_offset)
     qf = _create_queue_file(target)
     y, w, _ = target.isocalendar()
     return JSONResponse({"ok": True, "file": qf.name, "iso_week": w, "iso_year": y})
+
+
+@app.post("/api/agents/generate-week")
+async def generate_week(week_offset: int = 1, skip_analyst: bool = False):
+    """Roda Performance Analyst + Script Writer para gerar a fila da semana alvo."""
+    import sys as _sys
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        raise HTTPException(status_code=400, detail="ANTHROPIC_API_KEY não configurado no .env")
+
+    target = date.today() + timedelta(weeks=week_offset)
+    y, w, _ = target.isocalendar()
+    qf = QUEUE_DIR / f"{y}_W{w:02d}.json"
+    if qf.exists():
+        raise HTTPException(status_code=409,
+            detail=f"Fila {qf.name} já existe. Delete-a primeiro para regenerar.")
+
+    job_id = new_job(f"agents_w{w}")
+
+    def _run():
+        try:
+            update_job(job_id, status="running", step="analyst", progress=10,
+                       message="Performance Analyst: coletando métricas...")
+            if not skip_analyst:
+                _sys.path.insert(0, str(BASE_DIR))
+                from agents import performance_analyst
+                performance_analyst.run()
+
+            update_job(job_id, step="writer", progress=40,
+                       message="Script Writer: gerando 21 roteiros com Claude...")
+            from agents import script_writer
+            queue_file = script_writer.run()
+
+            update_job(job_id, status="done", step="done", progress=100,
+                       message=f"Fila {queue_file.name} criada com 21 roteiros!",
+                       result={"file": queue_file.name, "iso_week": w, "iso_year": y})
+        except Exception as e:
+            update_job(job_id, status="error", message=str(e), error=str(e))
+
+    threading.Thread(target=_run, daemon=True).start()
+    return JSONResponse({"job_id": job_id, "iso_week": w, "iso_year": y})
 
 
 @app.get("/api/queue/job/{slug}")
