@@ -125,7 +125,17 @@ CONCEPT_QUERIES = {
 # ── Fila ──────────────────────────────────────────────────────────────────────
 
 def find_today_entry() -> tuple:
-    """Retorna (queue_file, entries, entry, index) para hoje."""
+    """Retorna (queue_file, entries, entry, index) — compatibilidade com formato antigo (1/dia)."""
+    queue_file, entries, today_entries = find_today_entries()
+    if not today_entries:
+        raise ValueError(f"Nenhuma entrada para hoje em {queue_file.name}")
+    entry = today_entries[0]
+    idx   = next(i for i, e in enumerate(entries) if e["slug"] == entry["slug"])
+    return queue_file, entries, entry, idx
+
+
+def find_today_entries() -> tuple:
+    """Retorna (queue_file, all_entries, today_entries) — suporta múltiplos vídeos/dia."""
     today = date.today()
     iso_year, iso_week, _ = today.isocalendar()
     queue_file = QUEUE_DIR / f"{iso_year}_W{iso_week:02d}.json"
@@ -133,20 +143,19 @@ def find_today_entry() -> tuple:
     if not queue_file.exists():
         raise FileNotFoundError(
             f"Arquivo de fila não encontrado: {queue_file}\n"
-            f"Crie o arquivo para a semana {iso_week} de {iso_year} "
-            f"ou rode: python make_queue.py"
+            f"Crie o arquivo para a semana {iso_week} de {iso_year}"
         )
 
-    entries = json.loads(queue_file.read_text(encoding="utf-8"))
+    entries   = json.loads(queue_file.read_text(encoding="utf-8"))
     today_iso = today.isoformat()
+    today_entries = [e for e in entries if e.get("date") == today_iso]
 
-    for i, entry in enumerate(entries):
-        if entry.get("date") == today_iso:
-            return queue_file, entries, entry, i
+    if not today_entries:
+        raise ValueError(
+            f"Nenhuma entrada encontrada para hoje ({today_iso}) em {queue_file.name}"
+        )
 
-    raise ValueError(
-        f"Nenhuma entrada encontrada para hoje ({today_iso}) em {queue_file.name}"
-    )
+    return queue_file, entries, today_entries
 
 
 def save_queue(queue_file: Path, entries: list):
@@ -500,6 +509,107 @@ def ensure_next_week_queue():
     log.info(f"Fila da semana {iso_week} criada automaticamente: {queue_file.name}")
 
 
+def produce_entry(queue_file: Path, entries: list, entry: dict, args) -> bool:
+    """Produz um único vídeo. Retorna True se bem-sucedido."""
+    idx = next(i for i, e in enumerate(entries) if e["slug"] == entry["slug"])
+
+    log.info(f"Entrada: {entry['slug']} | slot: {entry.get('slot','-')} | status: {entry['status']}")
+
+    if entry["status"] == "producing" and not args.force:
+        log.info("Status 'producing' — ja em producao. Use --force para forçar.")
+        return True
+    if entry["status"] == "done" and not args.force:
+        log.info("Status 'done' — ja produzido. Use --force para reproduzir.")
+        return True
+    if not entry.get("narration", "").strip():
+        if args.dry_run:
+            log.warning("DRY-RUN: narracao vazia — preencha antes de rodar.")
+            return True
+        log.error("Narracao vazia!")
+        entries[idx]["status"]    = "error"
+        entries[idx]["error_msg"] = "Narracao vazia"
+        save_queue(queue_file, entries)
+        return False
+
+    if args.dry_run:
+        takes = auto_shotlist(entry["narration"], entry.get("num_takes", 12), entry.get("duration", 75))
+        log.info(f"DRY-RUN: {len(takes)} takes | voz: {entry.get('voice','rachel')} | "
+                 f"upload: {entry.get('publish_hour_brt',18)}h BRT")
+        for t in takes[:3]:
+            log.info(f"  {t['slug']} ({t['duration']}s) — {t['query']}")
+        log.info("  ...")
+        return True
+
+    # Marcar como produzindo
+    entries[idx]["status"] = "producing"
+    save_queue(queue_file, entries)
+
+    work_dir = OUTPUT_DIR / entry["slug"]
+    work_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        narr_path = work_dir / "narration.mp3"
+        if narr_path.exists():
+            log.info("[1/4] Narracao ja existe — pulando TTS")
+        else:
+            log.info("[1/4] Gerando narracao...")
+            generate_narration(entry["narration"], entry.get("voice", "rachel"), narr_path)
+            log.info(f"  OK — {narr_path.stat().st_size // 1024} KB")
+
+        takes = auto_shotlist(entry["narration"], entry.get("num_takes", 12), entry.get("duration", 75))
+        log.info(f"[2/4] Baixando {len(takes)} clips do Pexels...")
+        for i, take in enumerate(takes):
+            slug  = take["slug"]
+            query = take.get("query", "abstract dark cinematic")
+            out   = work_dir / f"{slug}.mp4"
+            if out.exists():
+                log.info(f"  [{i+1:02d}/{len(takes)}] {slug} [cache]")
+                continue
+            ok = download_clip(query, out)
+            log.info(f"  [{i+1:02d}/{len(takes)}] {slug} {'OK' if ok else 'PRETO'}")
+            time.sleep(0.3)
+
+        final_path = work_dir / "final_video.mp4"
+        if final_path.exists() and not args.force:
+            log.info("[3/4] final_video.mp4 ja existe — pulando edicao")
+        else:
+            log.info("[3/4] Editando video (3-5 min)...")
+            final_path = edit_video(work_dir, takes, narr_path)
+        size_mb = final_path.stat().st_size / (1024 * 1024)
+        log.info(f"  OK — {size_mb:.1f} MB")
+
+        if args.skip_upload:
+            log.info("[4/4] --skip-upload ativo — upload ignorado")
+            video_id = ""
+            yt_url   = f"file://{final_path}"
+        else:
+            log.info("[4/4] Fazendo upload para o YouTube...")
+            video_id = upload_youtube(final_path, entry)
+            yt_url   = f"https://www.youtube.com/shorts/{video_id}"
+            log.info(f"  OK — {yt_url} (agendado {entry.get('publish_hour_brt', 18)}h BRT)")
+
+        entries = json.loads(queue_file.read_text(encoding="utf-8"))
+        idx = next(i for i, e in enumerate(entries) if e["slug"] == entry["slug"])
+        entries[idx].update({
+            "status":      "done",
+            "video_id":    video_id,
+            "youtube_url": yt_url,
+            "produced_at": datetime.now().isoformat(),
+            "error_msg":   "",
+        })
+        save_queue(queue_file, entries)
+        return True
+
+    except Exception as e:
+        log.error(f"ERRO: {e}", exc_info=True)
+        entries = json.loads(queue_file.read_text(encoding="utf-8"))
+        idx = next(i for i, e in enumerate(entries) if e["slug"] == entry["slug"])
+        entries[idx]["status"]    = "error"
+        entries[idx]["error_msg"] = str(e)
+        save_queue(queue_file, entries)
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="Automação diária de vídeo")
     parser.add_argument("--dry-run",      action="store_true", help="Mostra o que faria, sem produzir")
@@ -511,116 +621,29 @@ def main():
     log.info(f"DAILY AUTO  {date.today().isoformat()}")
     log.info("=" * 60)
 
-    # Domingo: cria fila da próxima semana automaticamente
     ensure_next_week_queue()
 
-    # ── 1. Carregar entrada de hoje
     try:
-        queue_file, entries, entry, idx = find_today_entry()
+        queue_file, entries, today_entries = find_today_entries()
     except (FileNotFoundError, ValueError) as e:
         log.error(str(e))
         sys.exit(1)
 
-    log.info(f"Entrada: {entry['slug']} | status: {entry['status']}")
+    log.info(f"{len(today_entries)} vídeo(s) para hoje")
+    success_count = 0
 
-    if entry["status"] == "producing" and not args.force:
-        log.info("Status 'producing' — ja esta em producao. Use --force para reproduzir.")
-        return
-    if entry["status"] == "done" and not args.force:
-        log.info("Status 'done' — video ja produzido. Use --force para reproduzir.")
-        return
-    if not entry.get("narration", "").strip():
-        if args.dry_run:
-            log.warning("DRY-RUN: narracao vazia — preencha o campo 'narration' antes de rodar.")
-            return
-        log.error("Narracao vazia! Preencha o campo 'narration' no JSON da fila.")
-        entries[idx]["status"]    = "error"
-        entries[idx]["error_msg"] = "Narracao vazia"
-        save_queue(queue_file, entries)
-        sys.exit(1)
-
-    if args.dry_run:
-        takes = auto_shotlist(entry["narration"], entry.get("num_takes", 12), entry.get("duration", 75))
-        log.info(f"DRY-RUN: {len(takes)} takes | voz: {entry.get('voice','rachel')} | "
-                 f"upload: {entry.get('publish_hour_brt',18)}h BRT")
-        for t in takes[:3]:
-            log.info(f"  {t['slug']} ({t['duration']}s) — {t['query']}")
-        log.info("  ...")
-        return
-
-    # ── 2. Marcar como produzindo
-    entries[idx]["status"] = "producing"
-    save_queue(queue_file, entries)
-
-    work_dir = OUTPUT_DIR / entry["slug"]
-    work_dir.mkdir(parents=True, exist_ok=True)
-
-    try:
-        # ── 3. Narração
-        narr_path = work_dir / "narration.mp3"
-        if narr_path.exists():
-            log.info("[1/4] Narracao ja existe — pulando TTS")
-        else:
-            log.info("[1/4] Gerando narracao...")
-            generate_narration(entry["narration"], entry.get("voice", "rachel"), narr_path)
-            log.info(f"  OK — {narr_path.stat().st_size // 1024} KB")
-
-        # ── 4. Shotlist + download de clips
-        takes = auto_shotlist(entry["narration"], entry.get("num_takes", 12), entry.get("duration", 75))
-        log.info(f"[2/4] Baixando {len(takes)} clips do Pexels...")
-        for i, take in enumerate(takes):
-            slug  = take["slug"]
-            query = take.get("query", "abstract dark cinematic")
-            out   = work_dir / f"{slug}.mp4"
-            if out.exists():
-                log.info(f"  [{i+1:02d}/{len(takes)}] {slug} [cache]")
-                continue
-            ok = download_clip(query, out)
-            log.info(f"  [{i+1:02d}/{len(takes)}] {slug} {'OK' if ok else 'PRETO (clip nao encontrado)'}")
-            time.sleep(0.3)
-
-        # ── 5. Edição
-        final_path = work_dir / "final_video.mp4"
-        if final_path.exists() and not args.force:
-            log.info("[3/4] final_video.mp4 ja existe — pulando edicao")
-        else:
-            log.info("[3/4] Editando video (3-5 min)...")
-            final_path = edit_video(work_dir, takes, narr_path)
-        size_mb = final_path.stat().st_size / (1024 * 1024)
-        log.info(f"  OK — {size_mb:.1f} MB")
-
-        # ── 6. Upload YouTube
-        if args.skip_upload:
-            log.info("[4/4] --skip-upload ativo — upload ignorado")
-            video_id = ""
-            yt_url   = f"file://{final_path}"
-        else:
-            log.info("[4/4] Fazendo upload para o YouTube...")
-            video_id = upload_youtube(final_path, entry)
-            yt_url   = f"https://www.youtube.com/shorts/{video_id}"
-            log.info(f"  OK — {yt_url} (agendado {entry.get('publish_hour_brt', 18)}h BRT)")
-
-        # ── 7. Marcar como done
-        entries[idx].update({
-            "status":      "done",
-            "video_id":    video_id,
-            "youtube_url": yt_url,
-            "produced_at": datetime.now().isoformat(),
-            "error_msg":   "",
-        })
-        save_queue(queue_file, entries)
-
-        log.info("=" * 60)
-        log.info(f"CONCLUIDO  {yt_url}")
-        log.info("=" * 60)
-
-    except Exception as e:
-        log.error(f"ERRO: {e}", exc_info=True)
-        # Recarrega entradas para evitar sobrescrever mudancas concorrentes
+    for i, entry in enumerate(today_entries, 1):
+        log.info(f"\n── Vídeo {i}/{len(today_entries)} ─────────────────────────────")
         entries = json.loads(queue_file.read_text(encoding="utf-8"))
-        entries[idx]["status"]    = "error"
-        entries[idx]["error_msg"] = str(e)
-        save_queue(queue_file, entries)
+        ok = produce_entry(queue_file, entries, entry, args)
+        if ok:
+            success_count += 1
+
+    log.info("\n" + "=" * 60)
+    log.info(f"CONCLUIDO  {success_count}/{len(today_entries)} vídeos produzidos")
+    log.info("=" * 60)
+
+    if success_count < len(today_entries):
         sys.exit(1)
 
 
