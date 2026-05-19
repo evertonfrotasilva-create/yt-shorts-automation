@@ -71,6 +71,11 @@
             class="px-4 py-3 text-sm font-medium transition">
       Biblioteca
     </button>
+    <button @click="tab='advisor'"
+            :class="tab==='advisor' ? 'border-b-2 border-amber-400 text-amber-400' : 'text-gray-400 hover:text-white'"
+            class="px-4 py-3 text-sm font-medium transition flex items-center gap-1.5">
+      <span>✨</span> Advisor
+    </button>
   </div>
 </nav>
 
@@ -610,6 +615,89 @@
 </div><!-- end library tab -->
 
 
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- TAB: ADVISOR                                                             -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='advisor'" class="flex flex-col h-[calc(100vh-112px)]">
+
+  <!-- Header do Advisor -->
+  <div class="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-sm">✨</div>
+      <div>
+        <p class="text-sm font-semibold text-white">Advisor</p>
+        <p class="text-xs text-gray-500">Co-fundador + Especialista YouTube</p>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button @click="advisorClearHistory()"
+              class="text-xs text-gray-500 hover:text-gray-300 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition">
+        Limpar chat
+      </button>
+      <button @click="advisorWeeklyOrchestration()"
+              :disabled="advisorLoading"
+              class="text-xs font-semibold bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black px-4 py-1.5 rounded-lg transition flex items-center gap-1.5">
+        <span x-show="advisorWeeklyRunning" class="spin inline-block w-3 h-3 border border-black/30 border-t-black rounded-full"></span>
+        <span x-text="advisorWeeklyRunning ? 'Orquestrando...' : '🗓 Gerar semana c/ estratégia'"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sugestões rápidas -->
+  <div x-show="advisorHistory.length === 0" class="px-6 pt-6 pb-2">
+    <p class="text-xs text-gray-600 mb-3 uppercase tracking-wide font-semibold">Perguntas frequentes</p>
+    <div class="flex flex-wrap gap-2">
+      <template x-for="q in advisorSuggestions" :key="q">
+        <button @click="advisorSend(q)"
+                class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-2 rounded-lg transition border border-gray-700 hover:border-gray-600"
+                x-text="q"></button>
+      </template>
+    </div>
+  </div>
+
+  <!-- Mensagens -->
+  <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4" x-ref="advisorMessages">
+    <template x-for="(msg, i) in advisorHistory" :key="i">
+      <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+        <div :class="msg.role === 'user'
+               ? 'bg-amber-500/15 border border-amber-500/20 text-gray-200 max-w-[80%]'
+               : 'bg-gray-800 border border-gray-700 text-gray-200 max-w-[85%]'"
+             class="rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap"
+             x-text="msg.content"></div>
+      </div>
+    </template>
+
+    <!-- Typing indicator -->
+    <div x-show="advisorLoading" class="flex justify-start">
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl px-4 py-3 text-sm text-gray-400 flex items-center gap-2">
+        <span class="spin inline-block w-3 h-3 border border-gray-600 border-t-amber-400 rounded-full"></span>
+        <span x-text="advisorThinking || 'Pensando...'"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="border-t border-gray-800 px-6 py-4 bg-gray-950">
+    <div class="flex gap-3 items-end max-w-4xl mx-auto">
+      <textarea x-model="advisorInput"
+                @keydown.enter.exact.prevent="advisorSend(advisorInput)"
+                @keydown.shift.enter="advisorInput += '\n'"
+                :disabled="advisorLoading"
+                placeholder="Pergunte sobre estratégia, métricas, monetização..."
+                rows="1"
+                class="flex-1 bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none disabled:opacity-50 resize-none"></textarea>
+      <button @click="advisorSend(advisorInput)"
+              :disabled="advisorLoading || !advisorInput.trim()"
+              class="flex-shrink-0 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-semibold text-sm px-5 py-3 rounded-xl transition">
+        Enviar
+      </button>
+    </div>
+    <p class="text-xs text-gray-700 text-center mt-2">Enter para enviar · Shift+Enter para nova linha</p>
+  </div>
+
+</div><!-- end advisor tab -->
+
+
 <!-- ── SCRIPT ──────────────────────────────────────────────────────────────── -->
 <script>
 function app() {
@@ -637,6 +725,21 @@ function app() {
     agentStatus: '',
     agentProgress: 0,
     refreshingMetrics: false,
+
+    // Advisor
+    advisorHistory: [],
+    advisorInput: '',
+    advisorLoading: false,
+    advisorThinking: '',
+    advisorWeeklyRunning: false,
+    advisorSuggestions: [
+      'Como estamos indo? Qual é a situação atual do canal?',
+      'Quando podemos monetizar no YouTube?',
+      'Os títulos da semana estão bons?',
+      'Quais temas estão performando melhor?',
+      'O que devo mudar para crescer mais rápido?',
+      'Quais outras formas de receita posso explorar agora?',
+    ],
 
     // Single
     singleStep: 1,
@@ -790,6 +893,115 @@ function app() {
         const d = await r.json()
         this.translatedText = d.translated || 'Sem resultado.'
       } catch(e) { this.translatedText = 'Erro ao traduzir.' }
+    },
+
+    async advisorSend(message) {
+      if (!message || !message.trim() || this.advisorLoading) return
+      this.advisorInput = ''
+      this.advisorLoading = true
+      this.advisorThinking = 'Pensando...'
+
+      // Adiciona mensagem do usuário
+      this.advisorHistory.push({ role: 'user', content: message.trim() })
+      this.$nextTick(() => this._scrollAdvisor())
+
+      // Prepara histórico para API (exclui última mensagem do usuário que acabamos de adicionar)
+      const history = this.advisorHistory.slice(0, -1).map(h => ({
+        role: h.role, content: h.content
+      }))
+
+      // Placeholder para resposta
+      this.advisorHistory.push({ role: 'assistant', content: '' })
+      const idx = this.advisorHistory.length - 1
+
+      try {
+        const resp = await fetch('/api/advisor/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message.trim(), history })
+        })
+        if (!resp.ok) { throw new Error(await resp.text()) }
+
+        const reader = resp.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop()
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            const data = line.slice(6)
+            if (data === '[DONE]') break
+            if (data.startsWith('[ERROR]')) {
+              this.advisorHistory[idx].content += '\n\nErro: ' + data.slice(8)
+              break
+            }
+            // Restaura quebras de linha escapadas
+            this.advisorHistory[idx].content += data.replace(/\\n/g, '\n')
+            this.advisorThinking = 'Escrevendo...'
+            this.$nextTick(() => this._scrollAdvisor())
+          }
+        }
+      } catch(e) {
+        this.advisorHistory[idx].content = 'Erro ao conectar com o Advisor: ' + e.message
+      }
+
+      this.advisorLoading = false
+      this.advisorThinking = ''
+      this.$nextTick(() => this._scrollAdvisor())
+    },
+
+    _scrollAdvisor() {
+      const el = this.$refs.advisorMessages
+      if (el) el.scrollTop = el.scrollHeight
+    },
+
+    advisorClearHistory() {
+      this.advisorHistory = []
+    },
+
+    async advisorWeeklyOrchestration() {
+      if (this.advisorWeeklyRunning) return
+      this.advisorWeeklyRunning = true
+      this.advisorHistory.push({
+        role: 'user',
+        content: '[Iniciando orquestração semanal — Advisor vai analisar o canal e gerar a fila da próxima semana...]'
+      })
+      this.$nextTick(() => this._scrollAdvisor())
+
+      try {
+        const r = await fetch('/api/advisor/weekly', { method: 'POST' })
+        if (!r.ok) { throw new Error(await r.text()) }
+        const { job_id } = await r.json()
+
+        const poll = setInterval(async () => {
+          const jr = await fetch(`/api/produce/status/${job_id}`)
+          if (!jr.ok) return
+          const job = await jr.json()
+          if (job.status === 'done') {
+            clearInterval(poll)
+            this.advisorWeeklyRunning = false
+            const preview = job.result?.strategy_preview || ''
+            this.advisorHistory.push({
+              role: 'assistant',
+              content: `Orquestração concluída!\n\nEtapas executadas: ${(job.result?.steps||[]).join(' → ')}\n\n${preview}${preview ? '\n\n[Veja a fila gerada na aba Fila Semanal]' : ''}`
+            })
+            await this.loadQueue()
+            this.$nextTick(() => this._scrollAdvisor())
+          } else if (job.status === 'error') {
+            clearInterval(poll)
+            this.advisorWeeklyRunning = false
+            this.advisorHistory.push({ role: 'assistant', content: 'Erro na orquestração: ' + job.error })
+          }
+        }, 4000)
+      } catch(e) {
+        this.advisorWeeklyRunning = false
+        this.advisorHistory.push({ role: 'assistant', content: 'Erro: ' + e.message })
+      }
     },
 
     async refreshMetrics() {

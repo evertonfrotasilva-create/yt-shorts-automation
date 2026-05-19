@@ -125,6 +125,15 @@ Personal finance topics to explore (pick the most engaging angles, don't be gene
 Call the generate_weekly_queue tool with all 21 scripts."""
 
 
+def _load_strategic_brief() -> str:
+    brief_file = Path(__file__).parent / "data" / "strategic_brief.txt"
+    if brief_file.exists():
+        brief = brief_file.read_text(encoding="utf-8").strip()
+        brief_file.unlink()  # usa uma vez e descarta
+        return brief
+    return ""
+
+
 def run(dry_run: bool = False) -> Path:
     print("[Script Writer] Iniciando geração de roteiros...")
 
@@ -173,7 +182,13 @@ def run(dry_run: bool = False) -> Path:
         },
     }
 
+    strategic_brief = _load_strategic_brief()
+    if strategic_brief:
+        print(f"  Brief estrategico do Advisor carregado ({len(strategic_brief)} chars)")
+
     prompt = _build_prompt(report, past_titles, week_dates)
+    if strategic_brief:
+        prompt += f"\n\n## STRATEGIC DIRECTION FROM ADVISOR\n{strategic_brief}"
 
     print("  Chamando Claude API (pode levar 1-2 minutos)...")
     response = client.messages.create(

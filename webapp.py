@@ -11,7 +11,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -865,6 +865,67 @@ async def favicon():
 @app.get("/")
 async def index():
     return FileResponse(str(BASE_DIR / "static" / "index.html"))
+
+
+# ── API — Advisor ─────────────────────────────────────────────────────────────
+
+class AdvisorChatRequest(BaseModel):
+    message: str
+    history: list = []
+
+
+@app.post("/api/advisor/chat")
+async def advisor_chat(req: AdvisorChatRequest):
+    """Chat streaming com o Advisor Agent via SSE."""
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        raise HTTPException(status_code=400, detail="ANTHROPIC_API_KEY não configurado")
+
+    import sys as _sys
+    _sys.path.insert(0, str(BASE_DIR))
+    from agents.advisor import chat_stream
+
+    def generate():
+        try:
+            for chunk in chat_stream(req.message, req.history):
+                # SSE format
+                safe = chunk.replace("\n", "\\n")
+                yield f"data: {safe}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            yield f"data: [ERROR] {str(e)}\n\n"
+
+    return StreamingResponse(generate(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache",
+                                      "X-Accel-Buffering": "no"})
+
+
+@app.post("/api/advisor/weekly")
+async def advisor_weekly():
+    """Roda a orquestração semanal do Advisor em background."""
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        raise HTTPException(status_code=400, detail="ANTHROPIC_API_KEY não configurado")
+
+    job_id = new_job("advisor_weekly")
+
+    def _run():
+        import sys as _sys
+        _sys.path.insert(0, str(BASE_DIR))
+        try:
+            update_job(job_id, status="running", step="advisor", progress=10,
+                       message="Advisor analisando canal...")
+            from agents.advisor import orchestrate_weekly
+            report = orchestrate_weekly()
+            update_job(job_id, status="done", step="done", progress=100,
+                       message="Orquestração concluída! Fila gerada com estratégia do Advisor.",
+                       result={"steps": report.get("steps", []),
+                               "strategy_preview": (report.get("strategy") or "")[:300]})
+        except Exception as e:
+            update_job(job_id, status="error", message=str(e), error=str(e))
+
+    threading.Thread(target=_run, daemon=True).start()
+    return JSONResponse({"job_id": job_id})
 
 
 if __name__ == "__main__":
