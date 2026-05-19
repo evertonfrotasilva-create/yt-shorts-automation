@@ -1,0 +1,227 @@
+{
+  "best_hours": [
+    8,
+    14,
+    18
+  ],
+  "top_videos": [
+    {
+      "slug": "video_fri_0515",
+      "title": "Your emergency fund is costing you $400,000",
+      "date": "2026-05-15",
+      "publish_hour_brt": 18,
+      "views": 129,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "personal finance",
+        "emergency fund",
+        "money psychology",
+        "saving money",
+        "opportunity cost",
+        "investing basics",
+        "financial independence",
+        "money mistakes",
+        "how much to save",
+        "cash vs investing"
+      ]
+    },
+    {
+      "slug": "video_sat_0516",
+      "title": "Debt Snowball vs Avalanche — which actually wins?",
+      "date": "2026-05-16",
+      "publish_hour_brt": 18,
+      "views": 74,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "debt snowball",
+        "debt avalanche",
+        "pay off debt",
+        "personal finance",
+        "debt free",
+        "money tips",
+        "financial independence",
+        "debt payoff strategy",
+        "budgeting",
+        "money psychology"
+      ]
+    },
+    {
+      "slug": "video_sun_0517",
+      "title": "Why 90% of people never invest (and how to start today)",
+      "date": "2026-05-17",
+      "publish_hour_brt": 18,
+      "views": 38,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "investing for beginners",
+        "how to start investing",
+        "index funds",
+        "personal finance",
+        "compound interest",
+        "money psychology",
+        "financial independence",
+        "stock market",
+        "wealth building",
+        "money tips"
+      ]
+    },
+    {
+      "slug": "video_wed_0520",
+      "title": "The one number that predicts your wealth",
+      "date": "2026-05-20",
+      "publish_hour_brt": 18,
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "savings rate",
+        "financial independence",
+        "retire early",
+        "personal finance",
+        "wealth building",
+        "money math",
+        "how to retire",
+        "financial freedom",
+        "investing tips",
+        "money psychology"
+      ]
+    },
+    {
+      "slug": "video_tue_0519",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "rich people habits",
+        "investing mindset",
+        "why saving is not enough",
+        "index funds",
+        "personal finance",
+        "wealth building",
+        "money psychology",
+        "financial independence",
+        "investing for beginners",
+        "assets vs savings"
+      ]
+    }
+  ],
+  "avg_views": 48.6,
+  "videos_analyzed": 5,
+  "hour_performance": {
+    "18": 48.6
+  },
+  "videos": [
+    {
+      "slug": "video_tue_0519",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "rich people habits",
+        "investing mindset",
+        "why saving is not enough",
+        "index funds",
+        "personal finance",
+        "wealth building",
+        "money psychology",
+        "financial independence",
+        "investing for beginners",
+        "assets vs savings"
+      ]
+    },
+    {
+      "slug": "video_wed_0520",
+      "title": "The one number that predicts your wealth",
+      "date": "2026-05-20",
+      "publish_hour_brt": 18,
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "savings rate",
+        "financial independence",
+        "retire early",
+        "personal finance",
+        "wealth building",
+        "money math",
+        "how to retire",
+        "financial freedom",
+        "investing tips",
+        "money psychology"
+      ]
+    },
+    {
+      "slug": "video_fri_0515",
+      "title": "Your emergency fund is costing you $400,000",
+      "date": "2026-05-15",
+      "publish_hour_brt": 18,
+      "views": 129,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "personal finance",
+        "emergency fund",
+        "money psychology",
+        "saving money",
+        "opportunity cost",
+        "investing basics",
+        "financial independence",
+        "money mistakes",
+        "how much to save",
+        "cash vs investing"
+      ]
+    },
+    {
+      "slug": "video_sat_0516",
+      "title": "Debt Snowball vs Avalanche — which actually wins?",
+      "date": "2026-05-16",
+      "publish_hour_brt": 18,
+      "views": 74,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "debt snowball",
+        "debt avalanche",
+        "pay off debt",
+        "personal finance",
+        "debt free",
+        "money tips",
+        "financial independence",
+        "debt payoff strategy",
+        "budgeting",
+        "money psychology"
+      ]
+    },
+    {
+      "slug": "video_sun_0517",
+      "title": "Why 90% of people never invest (and how to start today)",
+      "date": "2026-05-17",
+      "publish_hour_brt": 18,
+      "views": 38,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "investing for beginners",
+        "how to start investing",
+        "index funds",
+        "personal finance",
+        "compound interest",
+        "money psychology",
+        "financial independence",
+        "stock market",
+        "wealth building",
+        "money tips"
+      ]
+    }
+  ],
+  "generated_at": "2026-05-19"
+}
