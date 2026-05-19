@@ -39,6 +39,7 @@ VOICE_IDS = {
 
 # ── Job tracking ───────────────────────────────────────────────────────────────
 _jobs: dict = {}
+_production_lock = threading.Semaphore(1)  # serializa jobs pesados: 1 render por vez
 
 def new_job(slug: str) -> str:
     job_id = str(uuid.uuid4())[:8]
@@ -232,7 +233,9 @@ def _download_clip(query: str, out_path: Path) -> bool:
         if not videos: return False
         files = videos[0].get("video_files", [])
         vert  = [f for f in files if f.get("width", 0) < f.get("height", 1)]
-        best  = max(vert or files, key=lambda f: f.get("height", 0))
+        pool  = vert or files
+        hd    = [f for f in pool if f.get("height", 0) <= 1080]
+        best  = max(hd or pool, key=lambda f: f.get("height", 0))
         with rq.get(best["link"], stream=True, timeout=60) as resp:
             resp.raise_for_status()
             out_path.write_bytes(resp.content)
@@ -411,51 +414,61 @@ def _run_queue_production(job_id: str, entry: dict, queue_file: Path):
                 e.update(extra)
         _write_queue(queue_file, entries)
 
-    try:
-        # 1 — Narração
-        update_job(job_id, status="running", step="narration", progress=5,
-                   message="Gerando narração com ElevenLabs...")
-        narr_path = work_dir / "narration.mp3"
-        if not narr_path.exists():
-            _generate_narration(entry["narration"], entry.get("voice","rachel"), narr_path)
-        update_job(job_id, progress=15, message="Narração gerada.")
+    update_job(job_id, status="running", step="queued", progress=1,
+               message="Aguardando slot de produção...")
+    with _production_lock:
+        try:
+            # 1 — Narração
+            update_job(job_id, status="running", step="narration", progress=5,
+                       message="Gerando narração com ElevenLabs...")
+            narr_path = work_dir / "narration.mp3"
+            if not narr_path.exists():
+                _generate_narration(entry["narration"], entry.get("voice","rachel"), narr_path)
+            update_job(job_id, progress=15, message="Narração gerada.")
 
-        # 2 — Clips
-        takes = _split_into_takes(entry["narration"], entry.get("num_takes",12), entry.get("duration",75))
-        total = len(takes)
-        for i, take in enumerate(takes):
-            pct = 15 + int((i/total)*45)
-            update_job(job_id, progress=pct, message=f"Baixando clip {i+1}/{total}...")
-            out = work_dir / f"{take['slug']}.mp4"
-            if not out.exists():
-                _download_clip(take.get("query","abstract dark cinematic"), out)
-            time.sleep(0.3)
-        update_job(job_id, progress=60, message="Clips prontos. Editando vídeo...")
+            # 2 — Clips
+            takes = _split_into_takes(entry["narration"], entry.get("num_takes",12), entry.get("duration",75))
+            total = len(takes)
+            for i, take in enumerate(takes):
+                pct = 15 + int((i/total)*45)
+                update_job(job_id, progress=pct, message=f"Baixando clip {i+1}/{total}...")
+                out = work_dir / f"{take['slug']}.mp4"
+                if not out.exists():
+                    _download_clip(take.get("query","abstract dark cinematic"), out)
+                time.sleep(0.3)
+            update_job(job_id, progress=60, message="Clips prontos. Editando vídeo...")
 
-        # 3 — Edição
-        update_job(job_id, step="editing", progress=62, message="Montando vídeo (3–5 min)...")
-        final = work_dir / "final_video.mp4"
-        if not final.exists():
-            final = _assemble_video(work_dir, takes, narr_path)
-        size_mb = round(final.stat().st_size / (1024*1024), 1)
-        update_job(job_id, progress=88, message=f"Vídeo pronto ({size_mb} MB). Subindo para o YouTube...")
+            # 3 — Edição
+            update_job(job_id, step="editing", progress=62, message="Montando vídeo (3–5 min)...")
+            final = work_dir / "final_video.mp4"
+            # apaga arquivo parcial de render anterior com falha
+            if final.exists() and final.stat().st_size < 5_000_000:
+                final.unlink()
+            if not final.exists():
+                final = _assemble_video(work_dir, takes, narr_path)
+            size_mb = round(final.stat().st_size / (1024*1024), 1)
+            update_job(job_id, progress=88, message=f"Vídeo pronto ({size_mb} MB). Subindo para o YouTube...")
 
-        # 4 — Upload YouTube
-        update_job(job_id, step="upload", progress=90, message="Enviando para o YouTube...")
-        video_id = _upload_youtube(final, entry)
-        yt_url   = f"https://www.youtube.com/shorts/{video_id}"
-        update_job(job_id, progress=100, message=f"Publicado! {yt_url}")
+            # 4 — Upload YouTube
+            update_job(job_id, step="upload", progress=90, message="Enviando para o YouTube...")
+            video_id = _upload_youtube(final, entry)
+            yt_url   = f"https://www.youtube.com/shorts/{video_id}"
+            update_job(job_id, progress=100, message=f"Publicado! {yt_url}")
 
-        # 5 — Marcar done
-        update_job(job_id, status="done", step="done",
-                   result={"file": str(final), "size_mb": size_mb,
-                           "youtube_url": yt_url, "video_id": video_id})
-        set_queue_status("done", video_id=video_id, youtube_url=yt_url,
-                         produced_at=datetime.now().isoformat(), error_msg="")
+            # 5 — Marcar done
+            update_job(job_id, status="done", step="done",
+                       result={"file": str(final), "size_mb": size_mb,
+                               "youtube_url": yt_url, "video_id": video_id})
+            set_queue_status("done", video_id=video_id, youtube_url=yt_url,
+                             produced_at=datetime.now().isoformat(), error_msg="")
 
-    except Exception as e:
-        update_job(job_id, status="error", message=str(e), error=str(e))
-        set_queue_status("error", error_msg=str(e))
+        except Exception as e:
+            # remove render parcial para permitir re-tentativa limpa
+            final = work_dir / "final_video.mp4"
+            if final.exists() and final.stat().st_size < 5_000_000:
+                final.unlink()
+            update_job(job_id, status="error", message=str(e), error=str(e))
+            set_queue_status("error", error_msg=str(e))
 
 
 # ── Pipeline runner for single (avulso) production ────────────────────────────
