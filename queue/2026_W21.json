@@ -53,8 +53,11 @@
       "assets vs savings"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "ucw_mJxoFrE",
+    "youtube_url": "https://www.youtube.com/shorts/ucw_mJxoFrE",
+    "produced_at": "2026-05-19T03:05:47.691139"
   },
   {
     "day": "wednesday",
