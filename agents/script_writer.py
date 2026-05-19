@@ -133,7 +133,7 @@ def run(dry_run: bool = False) -> Path:
     week_dates  = _next_week_dates()
     best_hours  = report.get("best_hours", [8, 14, 20])
 
-    print(f"  Semana alvo: {week_dates[0]['date']} → {week_dates[6]['date']}")
+    print(f"  Semana alvo: {week_dates[0]['date']} a {week_dates[6]['date']}")
     print(f"  Horários de publicação: {best_hours}")
     print(f"  {len(past_titles)} títulos anteriores carregados para evitar repetição")
 
@@ -179,7 +179,6 @@ def run(dry_run: bool = False) -> Path:
     response = client.messages.create(
         model="claude-opus-4-7",
         max_tokens=16000,
-        thinking={"type": "adaptive"},
         tools=[tool_def],
         tool_choice={"type": "tool", "name": "generate_weekly_queue"},
         messages=[{"role": "user", "content": prompt}],
