@@ -1,61 +1,77 @@
 """
-Orquestrador semanal de agentes.
-Roda todo domingo para gerar a fila da próxima semana.
+Orquestrador semanal — controlado pelo Advisor Agent.
+Roda todo domingo para gerar a fila da próxima semana com estratégia baseada em dados.
 
 Uso:
-  python agents/run_weekly.py               # fluxo completo
+  python agents/run_weekly.py               # fluxo completo via Advisor
   python agents/run_weekly.py --dry-run     # sem chamadas de API
-  python agents/run_weekly.py --skip-analyst  # pula coleta de métricas
+  python agents/run_weekly.py --simple      # sem Advisor (Performance Analyst + Script Writer direto)
 """
 
-import sys, argparse
+import sys, argparse, json
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-from agents import performance_analyst, script_writer
+
+def run_simple(dry_run: bool = False):
+    """Fluxo direto sem Advisor — útil para debug ou primeiro uso."""
+    from agents import performance_analyst, script_writer
+
+    print("\n[1/2] Performance Analyst")
+    report = performance_analyst.run() if not dry_run else {"best_hours": [8, 14, 20]}
+
+    print("\n[2/2] Script Writer")
+    queue_file = script_writer.run(dry_run=dry_run)
+    return queue_file
+
+
+def run_with_advisor():
+    """Fluxo orquestrado pelo Advisor — usa dados e estratégia para gerar roteiros melhores."""
+    from agents import advisor
+
+    print("\n[Advisor] Iniciando orquestração semanal...")
+    report = advisor.orchestrate_weekly()
+
+    if report.get("strategy"):
+        print("\n" + "─" * 60)
+        print("ESTRATEGIA DA SEMANA:")
+        print(report["strategy"])
+        print("─" * 60)
+
+    return report
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run",       action="store_true")
-    parser.add_argument("--skip-analyst",  action="store_true",
-                        help="Usa performance_report.json existente sem buscar novas métricas")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--simple",  action="store_true",
+                        help="Pula o Advisor, roda Performance Analyst + Script Writer diretamente")
     args = parser.parse_args()
 
     print("=" * 60)
     print("AGENTES SEMANAIS — The Reality of Money by Rufino")
     print("=" * 60)
 
-    # Passo 1: Performance Analyst
-    if not args.skip_analyst and not args.dry_run:
-        print("\n[1/2] Performance Analyst")
-        report = performance_analyst.run()
-    else:
-        print("\n[1/2] Performance Analyst — pulado")
-        data_file = Path(__file__).parent / "data" / "performance_report.json"
-        if data_file.exists():
-            import json
-            report = json.loads(data_file.read_text(encoding="utf-8"))
-            print(f"  Usando relatório existente: {data_file.name}")
-        else:
-            report = {"best_hours": [8, 14, 20], "top_videos": [], "avg_views": 0, "videos": []}
-            print("  Sem relatório existente — usando horários padrão")
-
-    # Passo 2: Script Writer
-    print("\n[2/2] Script Writer")
-    queue_file = script_writer.run(dry_run=args.dry_run)
-
-    print("\n" + "=" * 60)
     if args.dry_run:
-        print("DRY-RUN CONCLUÍDO — nenhum arquivo modificado")
+        print("\nDRY-RUN: validando estrutura sem chamar APIs...")
+        run_simple(dry_run=True)
+        print("\nDRY-RUN CONCLUIDO — estrutura OK")
+        return
+
+    if args.simple:
+        queue_file = run_simple()
+        print(f"\nCONCLUIDO — Fila: {queue_file.name if queue_file else 'N/A'}")
     else:
-        print(f"CONCLUÍDO — Fila gerada: {queue_file.name if queue_file else 'N/A'}")
-        print("Próximos passos:")
-        print("  1. Revisar os roteiros no webapp")
-        print("  2. Ajustar títulos/horários se necessário")
-        print("  3. Clicar 'Produzir' nos cards")
+        report = run_with_advisor()
+        steps = report.get("steps", [])
+        print(f"\nCONCLUIDO — Etapas executadas: {', '.join(steps) if steps else 'nenhuma'}")
+
+    print("\nProximos passos:")
+    print("  1. Revisar os roteiros no webapp (semana seguinte)")
+    print("  2. Ajustar se necessario")
+    print("  3. Os videos serao produzidos automaticamente pelo pipeline diario")
     print("=" * 60)
 
 
