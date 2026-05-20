@@ -58,6 +58,38 @@ def collect_done_entries(weeks_back: int = 4) -> list:
     return entries
 
 
+def fetch_channel_videos(yt, max_results: int = 50) -> list:
+    """Busca todos os vídeos do canal direto do YouTube (ignora fila local)."""
+    # Pega o channel id do próprio token
+    channel_resp = yt.channels().list(part="id,contentDetails", mine=True).execute()
+    items = channel_resp.get("items", [])
+    if not items:
+        return []
+
+    uploads_playlist = items[0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+    videos = []
+    page_token = None
+    while len(videos) < max_results:
+        resp = yt.playlistItems().list(
+            part="contentDetails,snippet",
+            playlistId=uploads_playlist,
+            maxResults=min(50, max_results - len(videos)),
+            pageToken=page_token,
+        ).execute()
+        for item in resp.get("items", []):
+            videos.append({
+                "video_id":    item["contentDetails"]["videoId"],
+                "title":       item["snippet"]["title"],
+                "published_at": item["snippet"]["publishedAt"],
+            })
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+
+    return videos
+
+
 def fetch_stats(yt, entries: list) -> dict:
     """Busca estatísticas do YouTube para os vídeos."""
     ids = [e["video_id"] for e in entries if e.get("video_id")]
@@ -74,9 +106,33 @@ def fetch_stats(yt, entries: list) -> dict:
     return stats
 
 
-def analyze(entries: list, stats: dict) -> dict:
+def fetch_all_channel_stats(yt) -> tuple[list, dict]:
+    """Busca todos os vídeos do canal + estatísticas em uma só chamada."""
+    channel_videos = fetch_channel_videos(yt, max_results=200)
+    if not channel_videos:
+        return [], {}
+
+    ids = [v["video_id"] for v in channel_videos]
+    stats = {}
+    for chunk in [ids[i:i+50] for i in range(0, len(ids), 50)]:
+        resp = yt.videos().list(part="statistics", id=",".join(chunk)).execute()
+        for item in resp.get("items", []):
+            s = item["statistics"]
+            stats[item["id"]] = {
+                "views":    int(s.get("viewCount",    0)),
+                "likes":    int(s.get("likeCount",    0)),
+                "comments": int(s.get("commentCount", 0)),
+            }
+
+    return channel_videos, stats
+
+
+def analyze(entries: list, stats: dict, channel_videos: list = None) -> dict:
     """Analisa padrões e retorna insights acionáveis."""
     videos = []
+
+    # Vídeos da fila local (com horário de publicação e tags)
+    seen_ids = set()
     for e in entries:
         vid_id = e.get("video_id", "")
         s = stats.get(vid_id, {"views": 0, "likes": 0, "comments": 0})
@@ -90,6 +146,26 @@ def analyze(entries: list, stats: dict) -> dict:
             "comments":          s["comments"],
             "tags":              e.get("tags", []),
         })
+        if vid_id:
+            seen_ids.add(vid_id)
+
+    # Vídeos do canal que não estão na fila local
+    for cv in (channel_videos or []):
+        vid_id = cv["video_id"]
+        if vid_id in seen_ids:
+            continue
+        s = stats.get(vid_id, {"views": 0, "likes": 0, "comments": 0})
+        videos.append({
+            "slug":              vid_id,
+            "title":             cv["title"],
+            "date":              cv["published_at"][:10],
+            "publish_hour_brt":  int(cv["published_at"][11:13]),
+            "views":             s["views"],
+            "likes":             s["likes"],
+            "comments":          s["comments"],
+            "tags":              [],
+        })
+        seen_ids.add(vid_id)
 
     if not videos:
         return {
@@ -169,11 +245,12 @@ def run(weeks_back: int = 4) -> dict:
         print("  Sem dados suficientes — usando horários padrão: 8h, 14h, 20h")
     else:
         try:
-            yt    = _youtube_client()
-            stats = fetch_stats(yt, entries)
-            print(f"  {len(stats)} vídeos com estatísticas do YouTube")
-            report = analyze(entries, stats)
-            write_stats_to_queues(stats, weeks_back)
+            yt = _youtube_client()
+            channel_videos, all_stats = fetch_all_channel_stats(yt)
+            print(f"  {len(channel_videos)} vídeos encontrados no canal")
+            print(f"  {len(all_stats)} com estatísticas do YouTube")
+            report = analyze(entries, all_stats, channel_videos)
+            write_stats_to_queues(all_stats, weeks_back)
         except Exception as e:
             print(f"  Aviso: não foi possível buscar stats do YouTube ({e})")
             print("  Usando dados locais (sem views)")

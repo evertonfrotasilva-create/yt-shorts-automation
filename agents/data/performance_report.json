@@ -1,10 +1,30 @@
 {
   "best_hours": [
-    8,
-    14,
-    18
+    11,
+    18,
+    21
   ],
   "top_videos": [
+    {
+      "slug": "odu98-XRqe4",
+      "title": "The 50/30/20 rule is lying to you",
+      "date": "2026-05-18",
+      "publish_hour_brt": 21,
+      "views": 360,
+      "likes": 9,
+      "comments": 0,
+      "tags": []
+    },
+    {
+      "slug": "vdTF9XFAS50",
+      "title": "Why video Destroys Most People",
+      "date": "2026-05-15",
+      "publish_hour_brt": 11,
+      "views": 251,
+      "likes": 6,
+      "comments": 0,
+      "tags": []
+    },
     {
       "slug": "video_fri_0515",
       "title": "Your emergency fund is costing you $400,000",
@@ -27,6 +47,16 @@
       ]
     },
     {
+      "slug": "6lUPt1gyqFI",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
+      "publish_hour_brt": 11,
+      "views": 87,
+      "likes": 2,
+      "comments": 0,
+      "tags": []
+    },
+    {
       "slug": "video_sat_0516",
       "title": "Debt Snowball vs Avalanche — which actually wins?",
       "date": "2026-05-16",
@@ -46,75 +76,14 @@
         "budgeting",
         "money psychology"
       ]
-    },
-    {
-      "slug": "video_sun_0524",
-      "title": "You don't have a money problem. You have a decision problem.",
-      "date": "2026-05-24",
-      "publish_hour_brt": 18,
-      "views": 71,
-      "likes": 0,
-      "comments": 0,
-      "tags": [
-        "money mindset",
-        "financial decisions",
-        "money psychology",
-        "personal finance",
-        "wealth habits",
-        "decision making",
-        "financial independence",
-        "behavior and money",
-        "money rules",
-        "financial framework"
-      ]
-    },
-    {
-      "slug": "video_sun_0517",
-      "title": "Why 90% of people never invest (and how to start today)",
-      "date": "2026-05-17",
-      "publish_hour_brt": 18,
-      "views": 46,
-      "likes": 0,
-      "comments": 0,
-      "tags": [
-        "investing for beginners",
-        "how to start investing",
-        "index funds",
-        "personal finance",
-        "compound interest",
-        "money psychology",
-        "financial independence",
-        "stock market",
-        "wealth building",
-        "money tips"
-      ]
-    },
-    {
-      "slug": "video_thu_0521",
-      "title": "Stop waiting for a raise — do this instead",
-      "date": "2026-05-21",
-      "publish_hour_brt": 18,
-      "views": 17,
-      "likes": 0,
-      "comments": 0,
-      "tags": [
-        "side hustle",
-        "multiple income streams",
-        "stop waiting for a raise",
-        "personal finance",
-        "financial independence",
-        "passive income",
-        "money tips",
-        "income ceiling",
-        "freelance",
-        "wealth building"
-      ]
     }
   ],
-  "avg_views": 39.3,
-  "videos_analyzed": 9,
+  "avg_views": 82.0,
+  "videos_analyzed": 13,
   "hour_performance": {
-    "18": 39.3
+    "18": 39.3,
+    "11": 117.3,
+    "21": 360.0
   },
   "videos": [
     {
@@ -305,6 +274,46 @@
         "wealth building",
         "money tips"
       ]
+    },
+    {
+      "slug": "6lUPt1gyqFI",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
+      "publish_hour_brt": 11,
+      "views": 87,
+      "likes": 2,
+      "comments": 0,
+      "tags": []
+    },
+    {
+      "slug": "odu98-XRqe4",
+      "title": "The 50/30/20 rule is lying to you",
+      "date": "2026-05-18",
+      "publish_hour_brt": 21,
+      "views": 360,
+      "likes": 9,
+      "comments": 0,
+      "tags": []
+    },
+    {
+      "slug": "9134_aDjVkU",
+      "title": "Why Your Brain Is Wired To Quit On Money",
+      "date": "2026-05-16",
+      "publish_hour_brt": 11,
+      "views": 14,
+      "likes": 0,
+      "comments": 0,
+      "tags": []
+    },
+    {
+      "slug": "vdTF9XFAS50",
+      "title": "Why video Destroys Most People",
+      "date": "2026-05-15",
+      "publish_hour_brt": 11,
+      "views": 251,
+      "likes": 6,
+      "comments": 0,
+      "tags": []
     }
   ],
   "generated_at": "2026-05-20"
