@@ -84,7 +84,12 @@
     "error_msg": "",
     "video_id": "HLzA_YTPkpI",
     "youtube_url": "https://www.youtube.com/shorts/HLzA_YTPkpI",
-    "produced_at": "2026-05-19T00:20:12.894458"
+    "produced_at": "2026-05-19T00:20:12.894458",
+    "metrics": {
+      "views": 3,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "thursday",
@@ -110,8 +115,16 @@
       "wealth building"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "7hvah7Abz4w",
+    "youtube_url": "https://www.youtube.com/shorts/7hvah7Abz4w",
+    "produced_at": "2026-05-19T15:40:28.969315",
+    "metrics": {
+      "views": 17,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "friday",
@@ -137,8 +150,16 @@
       "savings tips"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "fCvHWCC_Emk",
+    "youtube_url": "https://www.youtube.com/shorts/fCvHWCC_Emk",
+    "produced_at": "2026-05-19T15:58:55.664155",
+    "metrics": {
+      "views": 0,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "saturday",
@@ -164,8 +185,16 @@
       "investing for beginners"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "PhX2oO27aEQ",
+    "youtube_url": "https://www.youtube.com/shorts/PhX2oO27aEQ",
+    "produced_at": "2026-05-19T16:55:24.712812",
+    "metrics": {
+      "views": 0,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "sunday",
@@ -191,7 +220,15 @@
       "financial framework"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "5nhclWBd_Vs",
+    "youtube_url": "https://www.youtube.com/shorts/5nhclWBd_Vs",
+    "produced_at": "2026-05-19T17:12:12.860952",
+    "metrics": {
+      "views": 71,
+      "likes": 0,
+      "comments": 0
+    }
   }
 ]

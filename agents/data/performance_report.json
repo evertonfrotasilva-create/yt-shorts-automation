@@ -10,7 +10,7 @@
       "title": "Your emergency fund is costing you $400,000",
       "date": "2026-05-15",
       "publish_hour_brt": 18,
-      "views": 129,
+      "views": 132,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -31,7 +31,7 @@
       "title": "Debt Snowball vs Avalanche — which actually wins?",
       "date": "2026-05-16",
       "publish_hour_brt": 18,
-      "views": 74,
+      "views": 85,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -48,11 +48,32 @@
       ]
     },
     {
+      "slug": "video_sun_0524",
+      "title": "You don't have a money problem. You have a decision problem.",
+      "date": "2026-05-24",
+      "publish_hour_brt": 18,
+      "views": 71,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "money mindset",
+        "financial decisions",
+        "money psychology",
+        "personal finance",
+        "wealth habits",
+        "decision making",
+        "financial independence",
+        "behavior and money",
+        "money rules",
+        "financial framework"
+      ]
+    },
+    {
       "slug": "video_sun_0517",
       "title": "Why 90% of people never invest (and how to start today)",
       "date": "2026-05-17",
       "publish_hour_brt": 18,
-      "views": 38,
+      "views": 46,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -69,52 +90,31 @@
       ]
     },
     {
-      "slug": "video_wed_0520",
-      "title": "The one number that predicts your wealth",
-      "date": "2026-05-20",
+      "slug": "video_thu_0521",
+      "title": "Stop waiting for a raise — do this instead",
+      "date": "2026-05-21",
       "publish_hour_brt": 18,
-      "views": 2,
+      "views": 17,
       "likes": 0,
       "comments": 0,
       "tags": [
-        "savings rate",
-        "financial independence",
-        "retire early",
+        "side hustle",
+        "multiple income streams",
+        "stop waiting for a raise",
         "personal finance",
-        "wealth building",
-        "money math",
-        "how to retire",
-        "financial freedom",
-        "investing tips",
-        "money psychology"
-      ]
-    },
-    {
-      "slug": "video_tue_0519",
-      "title": "Why rich people don't save money",
-      "date": "2026-05-19",
-      "publish_hour_brt": 18,
-      "views": 0,
-      "likes": 0,
-      "comments": 0,
-      "tags": [
-        "rich people habits",
-        "investing mindset",
-        "why saving is not enough",
-        "index funds",
-        "personal finance",
-        "wealth building",
-        "money psychology",
         "financial independence",
-        "investing for beginners",
-        "assets vs savings"
+        "passive income",
+        "money tips",
+        "income ceiling",
+        "freelance",
+        "wealth building"
       ]
     }
   ],
-  "avg_views": 48.6,
-  "videos_analyzed": 5,
+  "avg_views": 39.3,
+  "videos_analyzed": 9,
   "hour_performance": {
-    "18": 48.6
+    "18": 39.3
   },
   "videos": [
     {
@@ -143,7 +143,7 @@
       "title": "The one number that predicts your wealth",
       "date": "2026-05-20",
       "publish_hour_brt": 18,
-      "views": 2,
+      "views": 3,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -160,11 +160,95 @@
       ]
     },
     {
+      "slug": "video_thu_0521",
+      "title": "Stop waiting for a raise — do this instead",
+      "date": "2026-05-21",
+      "publish_hour_brt": 18,
+      "views": 17,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "side hustle",
+        "multiple income streams",
+        "stop waiting for a raise",
+        "personal finance",
+        "financial independence",
+        "passive income",
+        "money tips",
+        "income ceiling",
+        "freelance",
+        "wealth building"
+      ]
+    },
+    {
+      "slug": "video_fri_0522",
+      "title": "Why your budget fails (and what works instead)",
+      "date": "2026-05-22",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "why budgets fail",
+        "pay yourself first",
+        "budgeting tips",
+        "money automation",
+        "personal finance",
+        "financial habits",
+        "money psychology",
+        "behavior change",
+        "financial system",
+        "savings tips"
+      ]
+    },
+    {
+      "slug": "video_sat_0523",
+      "title": "The $5/day rule that builds wealth quietly",
+      "date": "2026-05-23",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "5 dollars a day",
+        "compound interest",
+        "investing small amounts",
+        "start investing",
+        "personal finance",
+        "wealth building",
+        "index funds",
+        "financial habits",
+        "money tips",
+        "investing for beginners"
+      ]
+    },
+    {
+      "slug": "video_sun_0524",
+      "title": "You don't have a money problem. You have a decision problem.",
+      "date": "2026-05-24",
+      "publish_hour_brt": 18,
+      "views": 71,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "money mindset",
+        "financial decisions",
+        "money psychology",
+        "personal finance",
+        "wealth habits",
+        "decision making",
+        "financial independence",
+        "behavior and money",
+        "money rules",
+        "financial framework"
+      ]
+    },
+    {
       "slug": "video_fri_0515",
       "title": "Your emergency fund is costing you $400,000",
       "date": "2026-05-15",
       "publish_hour_brt": 18,
-      "views": 129,
+      "views": 132,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -185,7 +269,7 @@
       "title": "Debt Snowball vs Avalanche — which actually wins?",
       "date": "2026-05-16",
       "publish_hour_brt": 18,
-      "views": 74,
+      "views": 85,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -206,7 +290,7 @@
       "title": "Why 90% of people never invest (and how to start today)",
       "date": "2026-05-17",
       "publish_hour_brt": 18,
-      "views": 38,
+      "views": 46,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -223,5 +307,5 @@
       ]
     }
   ],
-  "generated_at": "2026-05-19"
+  "generated_at": "2026-05-20"
 }

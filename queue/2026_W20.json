@@ -91,7 +91,12 @@
     "error_msg": "",
     "video_id": "khmO5PZLlG4",
     "youtube_url": "https://www.youtube.com/shorts/khmO5PZLlG4",
-    "produced_at": "2026-05-15T06:32:52.616268"
+    "produced_at": "2026-05-15T06:32:52.616268",
+    "metrics": {
+      "views": 132,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "saturday",
@@ -121,7 +126,12 @@
     "error_msg": "",
     "video_id": "KjHQfMP2ABo",
     "youtube_url": "https://www.youtube.com/shorts/KjHQfMP2ABo",
-    "produced_at": "2026-05-16T10:25:12.838106"
+    "produced_at": "2026-05-16T10:25:12.838106",
+    "metrics": {
+      "views": 85,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "sunday",
@@ -151,6 +161,11 @@
     "error_msg": "",
     "video_id": "lJwpDilRatc",
     "youtube_url": "https://www.youtube.com/shorts/lJwpDilRatc",
-    "produced_at": "2026-05-17T12:17:32.074489"
+    "produced_at": "2026-05-17T12:17:32.074489",
+    "metrics": {
+      "views": 46,
+      "likes": 0,
+      "comments": 0
+    }
   }
 ]

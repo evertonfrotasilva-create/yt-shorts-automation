@@ -129,6 +129,35 @@ def analyze(entries: list, stats: dict) -> dict:
     }
 
 
+def write_stats_to_queues(stats: dict, weeks_back: int = 4):
+    """Salva métricas do YouTube de volta nos arquivos de fila."""
+    queue_dir = BASE_DIR / "queue"
+    today = date.today()
+    updated = 0
+
+    for i in range(weeks_back):
+        check = today - timedelta(weeks=i)
+        iso_year, iso_week, _ = check.isocalendar()
+        qf = queue_dir / f"{iso_year}_W{iso_week:02d}.json"
+        if not qf.exists():
+            continue
+
+        entries = json.loads(qf.read_text(encoding="utf-8"))
+        changed = False
+        for e in entries:
+            vid_id = e.get("video_id", "")
+            if vid_id and vid_id in stats:
+                e["metrics"] = stats[vid_id]
+                changed = True
+                updated += 1
+
+        if changed:
+            qf.write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    if updated:
+        print(f"  {updated} entradas de fila atualizadas com métricas do YouTube")
+
+
 def run(weeks_back: int = 4) -> dict:
     print(f"[Performance Analyst] Coletando métricas das últimas {weeks_back} semanas...")
 
@@ -144,6 +173,7 @@ def run(weeks_back: int = 4) -> dict:
             stats = fetch_stats(yt, entries)
             print(f"  {len(stats)} vídeos com estatísticas do YouTube")
             report = analyze(entries, stats)
+            write_stats_to_queues(stats, weeks_back)
         except Exception as e:
             print(f"  Aviso: não foi possível buscar stats do YouTube ({e})")
             print("  Usando dados locais (sem views)")
