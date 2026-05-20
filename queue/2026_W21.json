@@ -24,7 +24,8 @@
     ],
     "publish_hour_brt": 18,
     "status": "pending",
-    "error_msg": ""
+    "error_msg": "",
+    "slot": "a"
   },
   {
     "day": "tuesday",
@@ -54,7 +55,8 @@
     "error_msg": "",
     "video_id": "8o7roUrKlLc",
     "youtube_url": "https://www.youtube.com/shorts/8o7roUrKlLc",
-    "produced_at": "2026-05-19T00:07:17.728719"
+    "produced_at": "2026-05-19T00:07:17.728719",
+    "slot": "a"
   },
   {
     "day": "wednesday",
@@ -89,7 +91,8 @@
       "views": 3,
       "likes": 0,
       "comments": 0
-    }
+    },
+    "slot": "a"
   },
   {
     "day": "thursday",
@@ -124,7 +127,77 @@
       "views": 17,
       "likes": 0,
       "comments": 0
-    }
+    },
+    "slot": "a"
+  },
+  {
+    "day": "thursday",
+    "day_pt": "Quinta",
+    "date": "2026-05-21",
+    "slot": "a",
+    "slug": "video_thu_0521_a",
+    "narration": "Getting a $3,000 tax refund feels like a win. It's not. It's a receipt. You just gave the IRS an interest-free loan for 12 months. Over 3 years that's $9,000 sitting in Washington instead of your Roth IRA earning 8%. The rich don't get big refunds. They adjust their W-4, keep their money monthly, and invest the difference. A refund isn't a bonus. It's your own paycheck on layaway. Fix your withholding this week.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The $9,000 Tax Refund Lie Nobody Talks About",
+    "description": "Why your tax refund is actually costing you thousands. Adjust your W-4 and keep your own money working for you.",
+    "tags": [
+      "taxrefund",
+      "personalfinance",
+      "moneytips",
+      "w4",
+      "investing"
+    ],
+    "publish_hour_brt": 11,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "thursday",
+    "day_pt": "Quinta",
+    "date": "2026-05-21",
+    "slot": "b",
+    "slug": "video_thu_0521_b",
+    "narration": "Your grandparents told you: kill the mortgage. But run the math. A 3.2% mortgage versus an S&P 500 returning 9% over 20 years on $200,000 extra principal? You lose $127,000 in compounding. Paying off cheap debt early feels safe. It's actually the most expensive emotional decision in personal finance. If your rate is under 5%, every extra dollar belongs in the market, not in your house. Safety isn't always wealth.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The $127,000 Mistake of Paying Off Your Mortgage Early",
+    "description": "The math behind why aggressive mortgage payoff can cost you over six figures in lost compounding.",
+    "tags": [
+      "mortgage",
+      "investing",
+      "wealthbuilding",
+      "personalfinance",
+      "compounding"
+    ],
+    "publish_hour_brt": 18,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "thursday",
+    "day_pt": "Quinta",
+    "date": "2026-05-21",
+    "slot": "c",
+    "slug": "video_thu_0521_c",
+    "narration": "Everyone says buy the dip. Studies from Vanguard show that lump-sum investing immediately beats waiting for dips 68% of the time. The average dip-waiter sits in cash for 14 months and misses 23% in gains. Time in the market beats timing the market. Set automatic investments on the 1st and 15th. Boring? Yes. Profitable? Always. The dip you're waiting for already happened. You just weren't invested.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "Why 'Buy the Dip' Is Killing Your Portfolio",
+    "description": "Why waiting to buy the dip costs the average investor 23% in missed gains. Automate instead.",
+    "tags": [
+      "investing",
+      "stockmarket",
+      "buythedip",
+      "dca",
+      "wealth"
+    ],
+    "publish_hour_brt": 21,
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "friday",
@@ -159,7 +232,77 @@
       "views": 0,
       "likes": 0,
       "comments": 0
-    }
+    },
+    "slot": "a"
+  },
+  {
+    "day": "friday",
+    "day_pt": "Sexta",
+    "date": "2026-05-22",
+    "slot": "a",
+    "slug": "video_fri_0522_a",
+    "narration": "A $399 monthly lease feels cheap. Lease three cars back to back for 15 years and you spent $72,000 and own nothing. Buy one reliable used car for $18,000 and drive it 12 years? You keep $54,000 plus a paid-off asset. That's a $62,000 swing. Leasing isn't transportation. It's a subscription to the appearance of success. The wealthiest people I know drive 8-year-old Toyotas. Your car should move you, not impress strangers.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The $62,000 Car Lease Trap That Looks Affordable",
+    "description": "The real cost of perpetual leasing vs buying used. A $62,000 difference over 15 years.",
+    "tags": [
+      "carlease",
+      "carfinance",
+      "moneytips",
+      "wealthbuilding",
+      "savings"
+    ],
+    "publish_hour_brt": 11,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "friday",
+    "day_pt": "Sexta",
+    "date": "2026-05-22",
+    "slot": "b",
+    "slug": "video_fri_0522_b",
+    "narration": "Budgets fail because they require willpower every day. Here's what actually works: three checking accounts. Account 1 gets your paycheck and only pays fixed bills. Account 2 gets a weekly auto-transfer for groceries and gas. Account 3 is guilt-free spending. When account 3 is empty, you stop. No tracking. No apps. No spreadsheets. Just architecture. Behavioral economists call this 'mental accounting.' I call it the only system that's lasted me 7 years.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The 3-Account System That Replaced My Budget",
+    "description": "Skip the budget. Use this 3-account system to automate your spending and stop tracking forever.",
+    "tags": [
+      "budgeting",
+      "moneymanagement",
+      "personalfinance",
+      "moneytips",
+      "savings"
+    ],
+    "publish_hour_brt": 18,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "friday",
+    "day_pt": "Sexta",
+    "date": "2026-05-22",
+    "slot": "c",
+    "slug": "video_fri_0522_c",
+    "narration": "Your big-bank savings account pays 0.01%. Inflation ran 3.4%. On a $20,000 emergency fund, you lost $680 in purchasing power last year. Over 6 years? $4,300 gone. Quietly. A high-yield savings account at 4.5% would have made you $900 instead. Same FDIC insurance. Same liquidity. The only difference is which bank you picked. Loyalty to your bank is a tax on the financially asleep. Move your money tonight.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "Why Your 'Safe' Savings Account Lost You $4,300 Last Year",
+    "description": "How your traditional savings account silently destroys wealth, and the simple HYSA fix.",
+    "tags": [
+      "savings",
+      "hysa",
+      "inflation",
+      "emergencyfund",
+      "personalfinance"
+    ],
+    "publish_hour_brt": 21,
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "saturday",
@@ -194,7 +337,77 @@
       "views": 0,
       "likes": 0,
       "comments": 0
-    }
+    },
+    "slot": "a"
+  },
+  {
+    "day": "saturday",
+    "day_pt": "Sabado",
+    "date": "2026-05-23",
+    "slot": "a",
+    "slug": "video_sat_0523_a",
+    "narration": "If you make over $161,000 single, you can't contribute to a Roth IRA. Or so the rules say. The backdoor Roth IRA is completely legal: contribute $7,000 to a traditional IRA, convert it to Roth, pay zero taxes if done right. Do this for 20 years and you've moved $140,000 in. Growing tax-free, that's $250,000+ at retirement. The IRS knows. Congress knows. They left it open. The only people not using it are the ones who never heard of it.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The $250,000 Roth IRA Trick Most People Skip",
+    "description": "The legal backdoor Roth IRA strategy high earners use to build $250,000+ in tax-free retirement wealth.",
+    "tags": [
+      "rothira",
+      "backdoorroth",
+      "retirement",
+      "taxstrategy",
+      "investing"
+    ],
+    "publish_hour_brt": 11,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "saturday",
+    "day_pt": "Sabado",
+    "date": "2026-05-23",
+    "slot": "b",
+    "slug": "video_sat_0523_b",
+    "narration": "Cal Newport studied 1,000 careers. The happiest, wealthiest people didn't follow passion. They built rare and valuable skills first. Passion followed. Mastery creates meaning. A welder making $95,000 loves welding more than the barista who 'followed their dream' and makes $31,000. Passion isn't found. It's earned through competence. Pick a skill the market pays for, get genuinely good, and watch passion show up uninvited. The advice you were given was backwards.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "Why 'Following Your Passion' Made You Broke",
+    "description": "Why 'follow your passion' is bad financial advice, and the skills-first approach that builds wealth.",
+    "tags": [
+      "careeradvice",
+      "passion",
+      "skills",
+      "wealthbuilding",
+      "personalfinance"
+    ],
+    "publish_hour_brt": 18,
+    "status": "pending",
+    "error_msg": ""
+  },
+  {
+    "day": "saturday",
+    "day_pt": "Sabado",
+    "date": "2026-05-23",
+    "slot": "c",
+    "slug": "video_sat_0523_c",
+    "narration": "Everyone quotes the 4% rule for retirement withdrawals. Bill Bengen who created it in 1994 now says it should be 4.7%. Morningstar 2024 research says 3.7% is safer for 30-year retirements. So which is it? The honest answer: your withdrawal rate should flex with the market. Take 5% in good years, 3.5% in crashes. Retirees who flex outlast those who don't by 11 years on average. Rigid rules break. Flexible plans last.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The 4% Rule Is Wrong: Here's the Real Number",
+    "description": "The 4% rule is outdated. Here's the flexible withdrawal strategy that makes retirement money last longer.",
+    "tags": [
+      "retirement",
+      "4percentrule",
+      "fire",
+      "withdrawalstrategy",
+      "personalfinance"
+    ],
+    "publish_hour_brt": 21,
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "sunday",
@@ -229,6 +442,7 @@
       "views": 71,
       "likes": 0,
       "comments": 0
-    }
+    },
+    "slot": "a"
   }
 ]
