@@ -150,8 +150,11 @@
       "investing"
     ],
     "publish_hour_brt": 11,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "8wuXQ3uqd_c",
+    "youtube_url": "https://www.youtube.com/shorts/8wuXQ3uqd_c",
+    "produced_at": "2026-05-21T17:40:49.986300"
   },
   {
     "day": "thursday",
@@ -173,8 +176,11 @@
       "compounding"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "TyWlgSXBZ-E",
+    "youtube_url": "https://www.youtube.com/shorts/TyWlgSXBZ-E",
+    "produced_at": "2026-05-21T17:44:42.248410"
   },
   {
     "day": "thursday",
@@ -196,8 +202,11 @@
       "wealth"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "NC8Jk3PMqwg",
+    "youtube_url": "https://www.youtube.com/shorts/NC8Jk3PMqwg",
+    "produced_at": "2026-05-21T17:48:02.095807"
   },
   {
     "day": "friday",
