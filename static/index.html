@@ -234,19 +234,21 @@
             Resetar
           </button>
 
-          <button x-show="entry.status !== 'producing' || jobs[entry.slug]"
+          <button x-show="entry.status==='done'"
+                  @click="regenerate(entry.slug)"
+                  class="flex-1 text-xs font-semibold bg-blue-900/50 hover:bg-blue-800/60 text-blue-300 px-3 py-1.5 rounded-lg transition">
+            Regerar
+          </button>
+
+          <button x-show="entry.status !== 'producing' && entry.status !== 'done'"
                   @click="produce(entry.slug)"
-                  :disabled="!entry.narration || entry.status==='producing' || entry.status==='done'"
-                  class="flex-1 text-xs font-semibold disabled:opacity-40 px-3 py-1.5 rounded-lg transition"
-                  :class="entry.status==='done'
-                    ? 'bg-green-900/40 text-green-400 cursor-default'
-                    : 'bg-amber-500 hover:bg-amber-400 text-black'">
-            <span x-show="entry.status!=='producing' && entry.status!=='done'">Produzir</span>
+                  :disabled="!entry.narration || entry.status==='producing'"
+                  class="flex-1 text-xs font-semibold disabled:opacity-40 px-3 py-1.5 rounded-lg transition bg-amber-500 hover:bg-amber-400 text-black">
+            <span x-show="entry.status!=='producing'">Produzir</span>
             <span x-show="entry.status==='producing'" class="flex items-center gap-1 justify-center">
               <span class="spin inline-block w-3 h-3 border border-amber-800 border-t-amber-300 rounded-full"></span>
               Produzindo
             </span>
-            <span x-show="entry.status==='done'">Pronto</span>
           </button>
 
           </div>
@@ -1028,6 +1030,17 @@ function app() {
         const r = await fetch(`/api/queue/${slug}/reset`, { method:'POST' })
         if (r.ok) await this.loadQueue()
         else { const d=await r.json(); alert(d.detail||'Erro') }
+      } catch(e) { alert('Erro: ' + e) }
+    },
+
+    async regenerate(slug) {
+      try {
+        const r = await fetch(`/api/queue/${slug}/regenerate`, { method:'POST' })
+        if (!r.ok) { const d=await r.json(); alert(d.detail||'Erro'); return }
+        const d = await r.json()
+        this.jobs[slug] = { progress:0, message:'Iniciando...' }
+        await this.loadQueue()
+        this.startPoll(slug, d.job_id)
       } catch(e) { alert('Erro: ' + e) }
     },
 

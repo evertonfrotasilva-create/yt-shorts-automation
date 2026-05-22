@@ -640,6 +640,40 @@ async def reset_queue_entry(slug: str):
     return JSONResponse({"ok": True})
 
 
+@app.post("/api/queue/{slug}/regenerate")
+async def regenerate_queue_entry(slug: str):
+    """Reseta status para pending, apaga cache de outputs e dispara nova produção."""
+    import shutil
+    qf, entries = _find_queue_for_slug(slug)
+    if qf is None:
+        raise HTTPException(status_code=404, detail=f"Entrada {slug} não encontrada")
+    entry = next((e for e in entries if e["slug"] == slug), None)
+    if not entry.get("narration", "").strip():
+        raise HTTPException(status_code=422, detail="Narração vazia")
+    if entry.get("status") == "producing":
+        raise HTTPException(status_code=409, detail="Já em produção")
+
+    # Apaga cache de outputs para forçar re-render
+    work_dir = OUTPUT_DIR / slug
+    if work_dir.exists():
+        shutil.rmtree(work_dir)
+
+    # Reseta status
+    for e in entries:
+        if e["slug"] == slug:
+            e["status"] = "producing"
+            e.pop("video_id", None)
+            e.pop("youtube_url", None)
+            e.pop("produced_at", None)
+            e["error_msg"] = ""
+    _write_queue(qf, entries)
+
+    job_id = new_job(slug)
+    threading.Thread(target=_run_queue_production,
+                     args=(job_id, entry, qf), daemon=True).start()
+    return JSONResponse({"job_id": job_id})
+
+
 @app.post("/api/queue/create-week")
 async def create_week(week_offset: int = 0):
     """Cria fila vazia (formato legado, sem agentes)."""

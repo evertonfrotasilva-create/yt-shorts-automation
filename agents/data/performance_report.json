@@ -10,8 +10,8 @@
       "title": "The 50/30/20 rule is lying to you",
       "date": "2026-05-18",
       "publish_hour_brt": 21,
-      "views": 360,
-      "likes": 9,
+      "views": 581,
+      "likes": 12,
       "comments": 0,
       "tags": []
     },
@@ -24,6 +24,32 @@
       "likes": 6,
       "comments": 0,
       "tags": []
+    },
+    {
+      "slug": "6lUPt1gyqFI",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
+      "publish_hour_brt": 11,
+      "views": 154,
+      "likes": 2,
+      "comments": 0,
+      "tags": []
+    },
+    {
+      "slug": "video_thu_0521_a",
+      "title": "The $9,000 Tax Refund Lie Nobody Talks About",
+      "date": "2026-05-21",
+      "publish_hour_brt": 11,
+      "views": 151,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "taxrefund",
+        "personalfinance",
+        "moneytips",
+        "w4",
+        "investing"
+      ]
     },
     {
       "slug": "video_fri_0515",
@@ -45,45 +71,15 @@
         "how much to save",
         "cash vs investing"
       ]
-    },
-    {
-      "slug": "6lUPt1gyqFI",
-      "title": "Why rich people don't save money",
-      "date": "2026-05-19",
-      "publish_hour_brt": 11,
-      "views": 87,
-      "likes": 2,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "video_sat_0516",
-      "title": "Debt Snowball vs Avalanche — which actually wins?",
-      "date": "2026-05-16",
-      "publish_hour_brt": 18,
-      "views": 85,
-      "likes": 0,
-      "comments": 0,
-      "tags": [
-        "debt snowball",
-        "debt avalanche",
-        "pay off debt",
-        "personal finance",
-        "debt free",
-        "money tips",
-        "financial independence",
-        "debt payoff strategy",
-        "budgeting",
-        "money psychology"
-      ]
     }
   ],
-  "avg_views": 82.0,
-  "videos_analyzed": 13,
+  "avg_views": 115.0,
+  "videos_analyzed": 17,
   "hour_performance": {
-    "18": 39.3,
-    "11": 117.3,
-    "21": 360.0
+    "18": 75.7,
+    "11": 142.5,
+    "21": 296.0,
+    "17": 36.0
   },
   "videos": [
     {
@@ -133,8 +129,8 @@
       "title": "Stop waiting for a raise — do this instead",
       "date": "2026-05-21",
       "publish_hour_brt": 18,
-      "views": 17,
-      "likes": 0,
+      "views": 81,
+      "likes": 3,
       "comments": 0,
       "tags": [
         "side hustle",
@@ -150,12 +146,60 @@
       ]
     },
     {
+      "slug": "video_thu_0521_a",
+      "title": "The $9,000 Tax Refund Lie Nobody Talks About",
+      "date": "2026-05-21",
+      "publish_hour_brt": 11,
+      "views": 151,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "taxrefund",
+        "personalfinance",
+        "moneytips",
+        "w4",
+        "investing"
+      ]
+    },
+    {
+      "slug": "video_thu_0521_b",
+      "title": "The $127,000 Mistake of Paying Off Your Mortgage Early",
+      "date": "2026-05-21",
+      "publish_hour_brt": 18,
+      "views": 121,
+      "likes": 1,
+      "comments": 0,
+      "tags": [
+        "mortgage",
+        "investing",
+        "wealthbuilding",
+        "personalfinance",
+        "compounding"
+      ]
+    },
+    {
+      "slug": "video_thu_0521_c",
+      "title": "Why 'Buy the Dip' Is Killing Your Portfolio",
+      "date": "2026-05-21",
+      "publish_hour_brt": 21,
+      "views": 11,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "investing",
+        "stockmarket",
+        "buythedip",
+        "dca",
+        "wealth"
+      ]
+    },
+    {
       "slug": "video_fri_0522",
       "title": "Why your budget fails (and what works instead)",
       "date": "2026-05-22",
       "publish_hour_brt": 18,
-      "views": 0,
-      "likes": 0,
+      "views": 88,
+      "likes": 2,
       "comments": 0,
       "tags": [
         "why budgets fail",
@@ -175,8 +219,8 @@
       "title": "The $5/day rule that builds wealth quietly",
       "date": "2026-05-23",
       "publish_hour_brt": 18,
-      "views": 0,
-      "likes": 0,
+      "views": 104,
+      "likes": 2,
       "comments": 0,
       "tags": [
         "5 dollars a day",
@@ -196,7 +240,7 @@
       "title": "You don't have a money problem. You have a decision problem.",
       "date": "2026-05-24",
       "publish_hour_brt": 18,
-      "views": 71,
+      "views": 96,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -259,7 +303,7 @@
       "title": "Why 90% of people never invest (and how to start today)",
       "date": "2026-05-17",
       "publish_hour_brt": 18,
-      "views": 46,
+      "views": 47,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -276,11 +320,21 @@
       ]
     },
     {
+      "slug": "8wuXQ3uqd_c",
+      "title": "The $9,000 Tax Refund Lie Nobody Talks About",
+      "date": "2026-05-21",
+      "publish_hour_brt": 17,
+      "views": 36,
+      "likes": 0,
+      "comments": 0,
+      "tags": []
+    },
+    {
       "slug": "6lUPt1gyqFI",
       "title": "Why rich people don't save money",
       "date": "2026-05-19",
       "publish_hour_brt": 11,
-      "views": 87,
+      "views": 154,
       "likes": 2,
       "comments": 0,
       "tags": []
@@ -290,8 +344,8 @@
       "title": "The 50/30/20 rule is lying to you",
       "date": "2026-05-18",
       "publish_hour_brt": 21,
-      "views": 360,
-      "likes": 9,
+      "views": 581,
+      "likes": 12,
       "comments": 0,
       "tags": []
     },
@@ -316,5 +370,5 @@
       "tags": []
     }
   ],
-  "generated_at": "2026-05-20"
+  "generated_at": "2026-05-21"
 }
