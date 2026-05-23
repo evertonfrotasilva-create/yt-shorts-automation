@@ -369,8 +369,11 @@
       "investing"
     ],
     "publish_hour_brt": 11,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "jqwY0ZLcvEg",
+    "youtube_url": "https://www.youtube.com/shorts/jqwY0ZLcvEg",
+    "produced_at": "2026-05-23T20:58:32.211832"
   },
   {
     "day": "saturday",
@@ -392,8 +395,11 @@
       "personalfinance"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "s4OY-Q7nfdw",
+    "youtube_url": "https://www.youtube.com/shorts/s4OY-Q7nfdw",
+    "produced_at": "2026-05-23T21:11:25.419815"
   },
   {
     "day": "saturday",
@@ -415,8 +421,11 @@
       "personalfinance"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "LXqgBiA4nc8",
+    "youtube_url": "https://www.youtube.com/shorts/LXqgBiA4nc8",
+    "produced_at": "2026-05-23T21:22:17.998461"
   },
   {
     "day": "sunday",
