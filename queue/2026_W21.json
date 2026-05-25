@@ -88,7 +88,7 @@
     "youtube_url": "https://www.youtube.com/shorts/HLzA_YTPkpI",
     "produced_at": "2026-05-19T00:20:12.894458",
     "metrics": {
-      "views": 5,
+      "views": 3,
       "likes": 0,
       "comments": 0
     },
@@ -124,8 +124,8 @@
     "youtube_url": "https://www.youtube.com/shorts/7hvah7Abz4w",
     "produced_at": "2026-05-19T15:40:28.969315",
     "metrics": {
-      "views": 218,
-      "likes": 7,
+      "views": 17,
+      "likes": 0,
       "comments": 0
     },
     "slot": "a"
@@ -154,12 +154,7 @@
     "error_msg": "",
     "video_id": "8wuXQ3uqd_c",
     "youtube_url": "https://www.youtube.com/shorts/8wuXQ3uqd_c",
-    "produced_at": "2026-05-21T17:40:49.986300",
-    "metrics": {
-      "views": 48,
-      "likes": 0,
-      "comments": 0
-    }
+    "produced_at": "2026-05-21T17:40:49.986300"
   },
   {
     "day": "thursday",
@@ -209,9 +204,9 @@
     "publish_hour_brt": 21,
     "status": "done",
     "error_msg": "",
-    "video_id": "NC8Jk3PMqwg",
-    "youtube_url": "https://www.youtube.com/shorts/NC8Jk3PMqwg",
-    "produced_at": "2026-05-21T17:48:02.095807"
+    "video_id": "cTcEvD9gN0c",
+    "youtube_url": "https://www.youtube.com/shorts/cTcEvD9gN0c",
+    "produced_at": "2026-05-22T16:44:13.134228"
   },
   {
     "day": "friday",
@@ -243,8 +238,8 @@
     "youtube_url": "https://www.youtube.com/shorts/fCvHWCC_Emk",
     "produced_at": "2026-05-19T15:58:55.664155",
     "metrics": {
-      "views": 177,
-      "likes": 2,
+      "views": 0,
+      "likes": 0,
       "comments": 0
     },
     "slot": "a"
@@ -269,8 +264,11 @@
       "savings"
     ],
     "publish_hour_brt": 11,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "q04l88Ol0ds",
+    "youtube_url": "https://www.youtube.com/shorts/q04l88Ol0ds",
+    "produced_at": "2026-05-22T16:14:31.661251"
   },
   {
     "day": "friday",
@@ -292,8 +290,11 @@
       "savings"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "aLUoivsMyKc",
+    "youtube_url": "https://www.youtube.com/shorts/aLUoivsMyKc",
+    "produced_at": "2026-05-22T16:30:24.397306"
   },
   {
     "day": "friday",
@@ -304,7 +305,7 @@
     "narration": "Your savings account is not keeping your money safe. It is slowly destroying it. Here is how. The average traditional savings account at a major bank pays around zero point zero one percent interest. Inflation last year ran at about three point four percent. On a twenty thousand dollar emergency fund, that difference cost you six hundred and eighty dollars in purchasing power. You did not spend it. You did not lose it to a bad investment. The bank simply held your money while inflation quietly erased it. Over six years, the same dynamic costs over four thousand three hundred dollars. Your balance looks the same on the screen. The purchasing power is gone. The solution has existed for years and most people ignore it. A high yield savings account at an online bank like Ally, Marcus, or Discover currently pays between four and five percent annual interest. Same federal deposit insurance. Same withdrawal access. Same protections. The only difference is a decimal point — and over a decade, that decimal point is worth tens of thousands of dollars. Your loyalty to the bank your parents used is not a financial virtue. It is a quiet subsidy you pay them for the privilege of holding your money. How long have you had a savings account earning less than one percent? If this changed how you see money — subscribe. New video every day.",
     "num_takes": 12,
     "duration": 75,
-    "voice": "rachel",
+    "voice": "adam",
     "title": "Why Your 'Safe' Savings Account Lost You $4,300 Last Year",
     "description": "How your traditional savings account silently destroys wealth, and the simple HYSA fix.",
     "tags": [
@@ -315,8 +316,11 @@
       "personalfinance"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "S1dPunSNIBU",
+    "youtube_url": "https://www.youtube.com/shorts/S1dPunSNIBU",
+    "produced_at": "2026-05-22T16:57:59.831813"
   },
   {
     "day": "saturday",
@@ -348,8 +352,8 @@
     "youtube_url": "https://www.youtube.com/shorts/PhX2oO27aEQ",
     "produced_at": "2026-05-19T16:55:24.712812",
     "metrics": {
-      "views": 266,
-      "likes": 4,
+      "views": 0,
+      "likes": 0,
       "comments": 0
     },
     "slot": "a"
@@ -378,12 +382,7 @@
     "error_msg": "",
     "video_id": "jqwY0ZLcvEg",
     "youtube_url": "https://www.youtube.com/shorts/jqwY0ZLcvEg",
-    "produced_at": "2026-05-23T20:58:32.211832",
-    "metrics": {
-      "views": 95,
-      "likes": 1,
-      "comments": 0
-    }
+    "produced_at": "2026-05-23T20:58:32.211832"
   },
   {
     "day": "saturday",
@@ -409,12 +408,7 @@
     "error_msg": "",
     "video_id": "s4OY-Q7nfdw",
     "youtube_url": "https://www.youtube.com/shorts/s4OY-Q7nfdw",
-    "produced_at": "2026-05-23T21:11:25.419815",
-    "metrics": {
-      "views": 79,
-      "likes": 0,
-      "comments": 0
-    }
+    "produced_at": "2026-05-23T21:11:25.419815"
   },
   {
     "day": "saturday",
@@ -440,12 +434,7 @@
     "error_msg": "",
     "video_id": "LXqgBiA4nc8",
     "youtube_url": "https://www.youtube.com/shorts/LXqgBiA4nc8",
-    "produced_at": "2026-05-23T21:22:17.998461",
-    "metrics": {
-      "views": 98,
-      "likes": 0,
-      "comments": 0
-    }
+    "produced_at": "2026-05-23T21:22:17.998461"
   },
   {
     "day": "sunday",
@@ -477,10 +466,103 @@
     "youtube_url": "https://www.youtube.com/shorts/5nhclWBd_Vs",
     "produced_at": "2026-05-19T17:12:12.860952",
     "metrics": {
-      "views": 116,
+      "views": 71,
       "likes": 0,
       "comments": 0
     },
     "slot": "a"
+  },
+  {
+    "day": "sunday",
+    "day_pt": "Domingo",
+    "date": "2026-05-24",
+    "slot": "a",
+    "slug": "video_sun_0524_a",
+    "narration": "Forget your credit score. Forget your salary. There's one question that reveals your true financial health in seconds: Could you cover a $400 emergency tomorrow without borrowing? The Federal Reserve asks Americans this every year. In 2023, 37% said no. Not couldn't pay it easily — couldn't pay it at all. And here's what's wild: that group includes people earning six figures. Because financial health isn't about income. It's about distance. The distance between you and chaos. A flat tire. A broken tooth. A surprise vet bill. If $400 sends you to a credit card at 24% interest, you're not living paycheck to paycheck. You're living one paycheck behind it. Start here this week. Open a separate account. Name it something boring like \"Friction Fund.\" Move $25 a week in automatically. In four months, you'll cross that $400 line. In a year, you'll have $1,300 — enough to absorb most surprises life throws. That tiny buffer changes everything. You stop making panic decisions. You stop paying interest on emergencies. You start sleeping differently. Wealth doesn't begin when you invest. It begins the moment you become unshakeable by small disasters. If this changed how you see money — subscribe. New video every day.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The $400 Emergency That Exposes Your Real Financial Health",
+    "description": "37% of Americans can't cover a $400 emergency. Here's the simple system that fixes it in 4 months — and why this number matters more than your credit score. #personalfinance #moneytips #emergencyfund #financialfreedom #moneymindset #budgeting #savings #wealthbuilding #financialliteracy #moneyhabits",
+    "tags": [
+      "personal finance",
+      "emergency fund",
+      "financial health",
+      "money tips",
+      "savings",
+      "financial freedom",
+      "money mindset",
+      "budgeting",
+      "wealth building",
+      "financial literacy"
+    ],
+    "publish_hour_brt": 11,
+    "status": "done",
+    "error_msg": "",
+    "video_id": "yx440apK-r4",
+    "youtube_url": "https://www.youtube.com/shorts/yx440apK-r4",
+    "produced_at": "2026-05-24T08:05:21.616035"
+  },
+  {
+    "day": "sunday",
+    "day_pt": "Domingo",
+    "date": "2026-05-24",
+    "slot": "b",
+    "slug": "video_sun_0524_b",
+    "narration": "That coworker with the new Tesla? There's an 80% chance they're financing it at 7.2% interest, with $0 in their brokerage account. The neighbor with the kitchen remodel? HELOC. The friend posting from Tulum? Three credit cards. We're living through the strangest wealth illusion in history. Visible spending has never been easier. Invisible wealth has never been more hidden. And your brain can't tell the difference. A 2023 study found Americans consistently overestimate their peers' net worth by 300%. We assume lifestyle equals wealth. It usually means the opposite. The actual millionaires? They drive Toyotas with 80,000 miles. They wear $30 watches. They live in homes worth a third of what they can afford. Thomas Stanley documented this for thirty years. Nothing's changed except the social media pressure. Here's the shift: stop benchmarking against what you see. Start benchmarking against your future self. Ask one question before any big purchase — is this buying me freedom or borrowing it? Freedom compounds quietly. Borrowed lifestyle compounds loudly, then collapses. The richest person you know is probably the most boring one. And they're winning a game nobody else realizes they're playing. If this changed how you see money — subscribe. New video every day.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "Why Your Friends Look Richer Than You (And Probably Aren't)",
+    "description": "Your friends aren't as rich as they look. The wealth illusion is bankrupting a generation — here's how to spot it and escape it. #personalfinance #wealth #moneymindset #lifestyleinflation #millionairemindset #financialfreedom #investing #moneytips #frugalliving #financialliteracy",
+    "tags": [
+      "personal finance",
+      "wealth illusion",
+      "money mindset",
+      "lifestyle inflation",
+      "millionaire habits",
+      "financial freedom",
+      "investing",
+      "money tips",
+      "frugal living",
+      "social comparison"
+    ],
+    "publish_hour_brt": 18,
+    "status": "done",
+    "error_msg": "",
+    "video_id": "nRAllsX44Kg",
+    "youtube_url": "https://www.youtube.com/shorts/nRAllsX44Kg",
+    "produced_at": "2026-05-24T08:18:25.037608"
+  },
+  {
+    "day": "sunday",
+    "day_pt": "Domingo",
+    "date": "2026-05-24",
+    "slot": "c",
+    "slug": "video_sun_0524_c",
+    "narration": "Most people spend Sunday night dreading Monday. Wealthy people spend it doing something stranger — and it takes 18 minutes. They run a money review. Not a budget. Not a spreadsheet marathon. A review. Three questions, written down, every Sunday. One: What did I spend money on this week that I won't remember in a month? Two: What did I spend money on that I'm still grateful for? Three: What's the one financial decision I'm avoiding right now? That third question is the killer. Because the decisions you avoid cost you more than the ones you make badly. The credit card you haven't called. The 401k you haven't increased. The subscription you haven't canceled. The raise you haven't asked for. Avoidance has a price, and it compounds weekly. A Harvard study tracked people who did weekly financial reviews for one year. They saved 23% more than the control group — same income, same expenses, same city. The only variable was attention. Money rewards the people who look at it. Not obsessively. Just honestly. Eighteen minutes on Sunday. That's the entire system. Try it tonight before Monday eats you again. If this changed how you see money — subscribe. New video every day.",
+    "num_takes": 12,
+    "duration": 75,
+    "voice": "rachel",
+    "title": "The Sunday Habit That Quietly Makes People Rich",
+    "description": "The 18-minute Sunday habit that helped people save 23% more in a year — without earning more. Three questions that change everything. #personalfinance #sundayhabits #moneymindset #financialfreedom #wealthbuilding #moneytips #productivity #financialliteracy #moneyreview #habits",
+    "tags": [
+      "personal finance",
+      "sunday habits",
+      "money review",
+      "financial freedom",
+      "wealth building",
+      "money mindset",
+      "money tips",
+      "financial literacy",
+      "productivity",
+      "weekly review"
+    ],
+    "publish_hour_brt": 21,
+    "status": "done",
+    "error_msg": "",
+    "video_id": "5277lF0vdX4",
+    "youtube_url": "https://www.youtube.com/shorts/5277lF0vdX4",
+    "produced_at": "2026-05-24T08:30:49.277477"
   }
 ]

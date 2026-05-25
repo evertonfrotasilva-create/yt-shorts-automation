@@ -1,58 +1,59 @@
-{
+﻿{
   "best_hours": [
-    14,
+    11,
     18,
     21
   ],
   "top_videos": [
     {
-      "slug": "odu98-XRqe4",
-      "title": "The 50/30/20 rule is lying to you",
-      "date": "2026-05-18",
-      "publish_hour_brt": 21,
-      "views": 583,
-      "likes": 12,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "video_sat_0523",
-      "title": "The $5/day rule that builds wealth quietly",
-      "date": "2026-05-23",
+      "slug": "video_tue_0519",
+      "title": "Why rich people don't save money",
+      "date": "2026-05-19",
       "publish_hour_brt": 18,
-      "views": 266,
-      "likes": 4,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
-        "5 dollars a day",
-        "compound interest",
-        "investing small amounts",
-        "start investing",
+        "rich people habits",
+        "investing mindset",
+        "why saving is not enough",
+        "index funds",
         "personal finance",
         "wealth building",
-        "index funds",
-        "financial habits",
-        "money tips",
-        "investing for beginners"
+        "money psychology",
+        "financial independence",
+        "investing for beginners",
+        "assets vs savings"
       ]
     },
     {
-      "slug": "vdTF9XFAS50",
-      "title": "Why video Destroys Most People",
-      "date": "2026-05-15",
-      "publish_hour_brt": 11,
-      "views": 259,
-      "likes": 7,
+      "slug": "video_wed_0520",
+      "title": "The one number that predicts your wealth",
+      "date": "2026-05-20",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
-      "tags": []
+      "tags": [
+        "savings rate",
+        "financial independence",
+        "retire early",
+        "personal finance",
+        "wealth building",
+        "money math",
+        "how to retire",
+        "financial freedom",
+        "investing tips",
+        "money psychology"
+      ]
     },
     {
       "slug": "video_thu_0521",
       "title": "Stop waiting for a raise — do this instead",
       "date": "2026-05-21",
       "publish_hour_brt": 18,
-      "views": 218,
-      "likes": 7,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
         "side hustle",
@@ -68,36 +69,44 @@
       ]
     },
     {
-      "slug": "video_fri_0522",
-      "title": "Why your budget fails (and what works instead)",
-      "date": "2026-05-22",
-      "publish_hour_brt": 18,
-      "views": 177,
-      "likes": 2,
+      "slug": "video_thu_0521_a",
+      "title": "The $9,000 Tax Refund Lie Nobody Talks About",
+      "date": "2026-05-21",
+      "publish_hour_brt": 11,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
-        "why budgets fail",
-        "pay yourself first",
-        "budgeting tips",
-        "money automation",
-        "personal finance",
-        "financial habits",
-        "money psychology",
-        "behavior change",
-        "financial system",
-        "savings tips"
+        "taxrefund",
+        "personalfinance",
+        "moneytips",
+        "w4",
+        "investing"
+      ]
+    },
+    {
+      "slug": "video_thu_0521_b",
+      "title": "The $127,000 Mistake of Paying Off Your Mortgage Early",
+      "date": "2026-05-21",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "mortgage",
+        "investing",
+        "wealthbuilding",
+        "personalfinance",
+        "compounding"
       ]
     }
   ],
-  "avg_views": 105.5,
-  "videos_analyzed": 30,
+  "avg_views": 0.0,
+  "videos_analyzed": 18,
   "hour_performance": {
-    "18": 102.8,
-    "11": 95.9,
-    "21": 227.0,
-    "19": 51.0,
-    "14": 105.6,
-    "23": 1.0
+    "18": 0.0,
+    "11": 0.0,
+    "21": 0.0
   },
   "videos": [
     {
@@ -126,7 +135,7 @@
       "title": "The one number that predicts your wealth",
       "date": "2026-05-20",
       "publish_hour_brt": 18,
-      "views": 5,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -147,8 +156,8 @@
       "title": "Stop waiting for a raise — do this instead",
       "date": "2026-05-21",
       "publish_hour_brt": 18,
-      "views": 218,
-      "likes": 7,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
         "side hustle",
@@ -168,7 +177,7 @@
       "title": "The $9,000 Tax Refund Lie Nobody Talks About",
       "date": "2026-05-21",
       "publish_hour_brt": 11,
-      "views": 48,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -216,8 +225,8 @@
       "title": "Why your budget fails (and what works instead)",
       "date": "2026-05-22",
       "publish_hour_brt": 18,
-      "views": 177,
-      "likes": 2,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
         "why budgets fail",
@@ -233,12 +242,60 @@
       ]
     },
     {
+      "slug": "video_fri_0522_a",
+      "title": "The $62,000 Car Lease Trap That Looks Affordable",
+      "date": "2026-05-22",
+      "publish_hour_brt": 11,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "carlease",
+        "carfinance",
+        "moneytips",
+        "wealthbuilding",
+        "savings"
+      ]
+    },
+    {
+      "slug": "video_fri_0522_b",
+      "title": "The 3-Account System That Replaced My Budget",
+      "date": "2026-05-22",
+      "publish_hour_brt": 18,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "budgeting",
+        "moneymanagement",
+        "personalfinance",
+        "moneytips",
+        "savings"
+      ]
+    },
+    {
+      "slug": "video_fri_0522_c",
+      "title": "Why Your 'Safe' Savings Account Lost You $4,300 Last Year",
+      "date": "2026-05-22",
+      "publish_hour_brt": 21,
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "tags": [
+        "savings",
+        "hysa",
+        "inflation",
+        "emergencyfund",
+        "personalfinance"
+      ]
+    },
+    {
       "slug": "video_sat_0523",
       "title": "The $5/day rule that builds wealth quietly",
       "date": "2026-05-23",
       "publish_hour_brt": 18,
-      "views": 266,
-      "likes": 4,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
         "5 dollars a day",
@@ -258,8 +315,8 @@
       "title": "The $250,000 Roth IRA Trick Most People Skip",
       "date": "2026-05-23",
       "publish_hour_brt": 11,
-      "views": 95,
-      "likes": 1,
+      "views": 0,
+      "likes": 0,
       "comments": 0,
       "tags": [
         "rothira",
@@ -274,7 +331,7 @@
       "title": "Why 'Following Your Passion' Made You Broke",
       "date": "2026-05-23",
       "publish_hour_brt": 18,
-      "views": 79,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -290,7 +347,7 @@
       "title": "The 4% Rule Is Wrong: Here's the Real Number",
       "date": "2026-05-23",
       "publish_hour_brt": 21,
-      "views": 98,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -306,7 +363,7 @@
       "title": "You don't have a money problem. You have a decision problem.",
       "date": "2026-05-24",
       "publish_hour_brt": 18,
-      "views": 116,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -327,7 +384,7 @@
       "title": "Your emergency fund is costing you $400,000",
       "date": "2026-05-15",
       "publish_hour_brt": 18,
-      "views": 135,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -348,7 +405,7 @@
       "title": "Debt Snowball vs Avalanche — which actually wins?",
       "date": "2026-05-16",
       "publish_hour_brt": 18,
-      "views": 86,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -369,7 +426,7 @@
       "title": "Why 90% of people never invest (and how to start today)",
       "date": "2026-05-17",
       "publish_hour_brt": 18,
-      "views": 49,
+      "views": 0,
       "likes": 0,
       "comments": 0,
       "tags": [
@@ -384,156 +441,6 @@
         "wealth building",
         "money tips"
       ]
-    },
-    {
-      "slug": "nRAllsX44Kg",
-      "title": "Why Your Friends Look Richer Than You (And Probably Aren't)",
-      "date": "2026-05-24",
-      "publish_hour_brt": 19,
-      "views": 15,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "yx440apK-r4",
-      "title": "The $400 Emergency That Exposes Your Real Financial Health",
-      "date": "2026-05-24",
-      "publish_hour_brt": 14,
-      "views": 71,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "5277lF0vdX4",
-      "title": "The Sunday Habit That Quietly Makes People Rich",
-      "date": "2026-05-24",
-      "publish_hour_brt": 11,
-      "views": 0,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "S1dPunSNIBU",
-      "title": "Why Your 'Safe' Savings Account Lost You $4,300 Last Year",
-      "date": "2026-05-23",
-      "publish_hour_brt": 11,
-      "views": 86,
-      "likes": 2,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "cTcEvD9gN0c",
-      "title": "Why 'Buy the Dip' Is Killing Your Portfolio",
-      "date": "2026-05-22",
-      "publish_hour_brt": 23,
-      "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "APuc4WnKN0s",
-      "title": "Why Your 'Safe' Savings Account Lost You $4,300 Last Year",
-      "date": "2026-05-22",
-      "publish_hour_brt": 19,
-      "views": 32,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "Zu23agK95HU",
-      "title": "The 3-Account System That Replaced My Budget",
-      "date": "2026-05-22",
-      "publish_hour_brt": 14,
-      "views": 116,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "WMIsQh8BRNI",
-      "title": "The $62,000 Car Lease Trap That Looks Affordable.",
-      "date": "2026-05-21",
-      "publish_hour_brt": 19,
-      "views": 106,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "GefbHnkxjVI",
-      "title": "Why 'Buy the Dip' Is Killing Your Portfolio",
-      "date": "2026-05-21",
-      "publish_hour_brt": 14,
-      "views": 35,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "CJMnR5tRG9M",
-      "title": "The $127,000 Mistake of Paying Off Your Mortgage Early",
-      "date": "2026-05-21",
-      "publish_hour_brt": 14,
-      "views": 150,
-      "likes": 1,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "66H5iYl3Zng",
-      "title": "The $9,000 Tax Refund Lie Nobody Talks About",
-      "date": "2026-05-21",
-      "publish_hour_brt": 14,
-      "views": 156,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "6lUPt1gyqFI",
-      "title": "Why rich people don't save money",
-      "date": "2026-05-19",
-      "publish_hour_brt": 11,
-      "views": 167,
-      "likes": 2,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "odu98-XRqe4",
-      "title": "The 50/30/20 rule is lying to you",
-      "date": "2026-05-18",
-      "publish_hour_brt": 21,
-      "views": 583,
-      "likes": 12,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "9134_aDjVkU",
-      "title": "Why Your Brain Is Wired To Quit On Money",
-      "date": "2026-05-16",
-      "publish_hour_brt": 11,
-      "views": 16,
-      "likes": 0,
-      "comments": 0,
-      "tags": []
-    },
-    {
-      "slug": "vdTF9XFAS50",
-      "title": "Why video Destroys Most People",
-      "date": "2026-05-15",
-      "publish_hour_brt": 11,
-      "views": 259,
-      "likes": 7,
-      "comments": 0,
-      "tags": []
     }
   ],
   "generated_at": "2026-05-24"
