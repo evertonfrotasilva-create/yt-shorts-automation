@@ -218,8 +218,11 @@
       "financial freedom"
     ],
     "publish_hour_brt": 14,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "ALRomHH5H5s",
+    "youtube_url": "https://www.youtube.com/shorts/ALRomHH5H5s",
+    "produced_at": "2026-05-27T18:23:40.298663"
   },
   {
     "day": "wednesday",
@@ -245,8 +248,11 @@
       "money mistakes"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "VF5cvScODPI",
+    "youtube_url": "https://www.youtube.com/shorts/VF5cvScODPI",
+    "produced_at": "2026-05-27T18:30:45.848197"
   },
   {
     "day": "wednesday",
@@ -272,8 +278,11 @@
       "tax strategy"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "cTniTjRLFgI",
+    "youtube_url": "https://www.youtube.com/shorts/cTniTjRLFgI",
+    "produced_at": "2026-05-27T18:40:47.583170"
   },
   {
     "day": "thursday",
