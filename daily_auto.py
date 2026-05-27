@@ -447,11 +447,11 @@ def upload_youtube(video_path: Path, entry: dict) -> str:
 
     yt = build("youtube", "v3", credentials=creds)
 
-    # Horário de publicação: hoje às publish_hour_brt no fuso BRT (UTC-3)
+    # Horário de publicação: data do entry às publish_hour_brt no fuso BRT (UTC-3)
     publish_hour = entry.get("publish_hour_brt", 18)
-    today        = date.today()
+    pub_date     = date.fromisoformat(entry.get("date") or date.today().isoformat())
     brt          = timezone(timedelta(hours=-3))
-    publish_dt   = datetime(today.year, today.month, today.day, publish_hour, 0, 0, tzinfo=brt)
+    publish_dt   = datetime(pub_date.year, pub_date.month, pub_date.day, publish_hour, 0, 0, tzinfo=brt)
 
     body = {
         "snippet": {
@@ -643,7 +643,8 @@ def main():
     log.info(f"CONCLUIDO  {success_count}/{len(today_entries)} vídeos produzidos")
     log.info("=" * 60)
 
-    if success_count < len(today_entries):
+    # Só falha hard se NENHUM vídeo foi produzido — permite commit parcial no CI
+    if success_count == 0 and len(today_entries) > 0:
         sys.exit(1)
 
 

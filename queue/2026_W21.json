@@ -88,7 +88,7 @@
     "youtube_url": "https://www.youtube.com/shorts/HLzA_YTPkpI",
     "produced_at": "2026-05-19T00:20:12.894458",
     "metrics": {
-      "views": 3,
+      "views": 5,
       "likes": 0,
       "comments": 0
     },
@@ -124,8 +124,8 @@
     "youtube_url": "https://www.youtube.com/shorts/7hvah7Abz4w",
     "produced_at": "2026-05-19T15:40:28.969315",
     "metrics": {
-      "views": 17,
-      "likes": 0,
+      "views": 218,
+      "likes": 7,
       "comments": 0
     },
     "slot": "a"
@@ -154,7 +154,12 @@
     "error_msg": "",
     "video_id": "8wuXQ3uqd_c",
     "youtube_url": "https://www.youtube.com/shorts/8wuXQ3uqd_c",
-    "produced_at": "2026-05-21T17:40:49.986300"
+    "produced_at": "2026-05-21T17:40:49.986300",
+    "metrics": {
+      "views": 47,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "thursday",
@@ -206,7 +211,12 @@
     "error_msg": "",
     "video_id": "cTcEvD9gN0c",
     "youtube_url": "https://www.youtube.com/shorts/cTcEvD9gN0c",
-    "produced_at": "2026-05-22T16:44:13.134228"
+    "produced_at": "2026-05-22T16:44:13.134228",
+    "metrics": {
+      "views": 1,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "friday",
@@ -238,8 +248,8 @@
     "youtube_url": "https://www.youtube.com/shorts/fCvHWCC_Emk",
     "produced_at": "2026-05-19T15:58:55.664155",
     "metrics": {
-      "views": 0,
-      "likes": 0,
+      "views": 177,
+      "likes": 2,
       "comments": 0
     },
     "slot": "a"
@@ -320,7 +330,12 @@
     "error_msg": "",
     "video_id": "S1dPunSNIBU",
     "youtube_url": "https://www.youtube.com/shorts/S1dPunSNIBU",
-    "produced_at": "2026-05-22T16:57:59.831813"
+    "produced_at": "2026-05-22T16:57:59.831813",
+    "metrics": {
+      "views": 100,
+      "likes": 2,
+      "comments": 0
+    }
   },
   {
     "day": "saturday",
@@ -352,8 +367,8 @@
     "youtube_url": "https://www.youtube.com/shorts/PhX2oO27aEQ",
     "produced_at": "2026-05-19T16:55:24.712812",
     "metrics": {
-      "views": 0,
-      "likes": 0,
+      "views": 266,
+      "likes": 4,
       "comments": 0
     },
     "slot": "a"
@@ -382,7 +397,12 @@
     "error_msg": "",
     "video_id": "jqwY0ZLcvEg",
     "youtube_url": "https://www.youtube.com/shorts/jqwY0ZLcvEg",
-    "produced_at": "2026-05-23T20:58:32.211832"
+    "produced_at": "2026-05-23T20:58:32.211832",
+    "metrics": {
+      "views": 137,
+      "likes": 2,
+      "comments": 0
+    }
   },
   {
     "day": "saturday",
@@ -408,7 +428,12 @@
     "error_msg": "",
     "video_id": "s4OY-Q7nfdw",
     "youtube_url": "https://www.youtube.com/shorts/s4OY-Q7nfdw",
-    "produced_at": "2026-05-23T21:11:25.419815"
+    "produced_at": "2026-05-23T21:11:25.419815",
+    "metrics": {
+      "views": 79,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "saturday",
@@ -434,7 +459,12 @@
     "error_msg": "",
     "video_id": "LXqgBiA4nc8",
     "youtube_url": "https://www.youtube.com/shorts/LXqgBiA4nc8",
-    "produced_at": "2026-05-23T21:22:17.998461"
+    "produced_at": "2026-05-23T21:22:17.998461",
+    "metrics": {
+      "views": 99,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "sunday",
@@ -466,7 +496,7 @@
     "youtube_url": "https://www.youtube.com/shorts/5nhclWBd_Vs",
     "produced_at": "2026-05-19T17:12:12.860952",
     "metrics": {
-      "views": 71,
+      "views": 116,
       "likes": 0,
       "comments": 0
     },
@@ -501,7 +531,12 @@
     "error_msg": "",
     "video_id": "yx440apK-r4",
     "youtube_url": "https://www.youtube.com/shorts/yx440apK-r4",
-    "produced_at": "2026-05-24T08:05:21.616035"
+    "produced_at": "2026-05-24T08:05:21.616035",
+    "metrics": {
+      "views": 72,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "sunday",
@@ -532,7 +567,12 @@
     "error_msg": "",
     "video_id": "nRAllsX44Kg",
     "youtube_url": "https://www.youtube.com/shorts/nRAllsX44Kg",
-    "produced_at": "2026-05-24T08:18:25.037608"
+    "produced_at": "2026-05-24T08:18:25.037608",
+    "metrics": {
+      "views": 63,
+      "likes": 2,
+      "comments": 0
+    }
   },
   {
     "day": "sunday",
@@ -563,6 +603,11 @@
     "error_msg": "",
     "video_id": "5277lF0vdX4",
     "youtube_url": "https://www.youtube.com/shorts/5277lF0vdX4",
-    "produced_at": "2026-05-24T08:30:49.277477"
+    "produced_at": "2026-05-24T08:30:49.277477",
+    "metrics": {
+      "views": 83,
+      "likes": 0,
+      "comments": 0
+    }
   }
 ]

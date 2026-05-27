@@ -23,8 +23,16 @@
       "financial independence"
     ],
     "publish_hour_brt": 14,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "nMY1ane_AVU",
+    "youtube_url": "https://www.youtube.com/shorts/nMY1ane_AVU",
+    "produced_at": "2026-05-25T08:52:50.515939",
+    "metrics": {
+      "views": 0,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "monday",
@@ -50,8 +58,16 @@
       "credit repair"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "zbuOfyrjctc",
+    "youtube_url": "https://www.youtube.com/shorts/zbuOfyrjctc",
+    "produced_at": "2026-05-25T09:04:56.278434",
+    "metrics": {
+      "views": 0,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "monday",
@@ -77,8 +93,16 @@
       "investing"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "XTbuPyndVKQ",
+    "youtube_url": "https://www.youtube.com/shorts/XTbuPyndVKQ",
+    "produced_at": "2026-05-25T09:17:13.546417",
+    "metrics": {
+      "views": 0,
+      "likes": 0,
+      "comments": 0
+    }
   },
   {
     "day": "tuesday",
@@ -104,8 +128,11 @@
       "wealth building"
     ],
     "publish_hour_brt": 14,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "GlmlljWrpoI",
+    "youtube_url": "https://www.youtube.com/shorts/GlmlljWrpoI",
+    "produced_at": "2026-05-26T10:56:15.496351"
   },
   {
     "day": "tuesday",
@@ -131,8 +158,11 @@
       "money tips"
     ],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "BhZJhfsuav8",
+    "youtube_url": "https://www.youtube.com/shorts/BhZJhfsuav8",
+    "produced_at": "2026-05-26T11:09:58.527789"
   },
   {
     "day": "tuesday",
@@ -158,8 +188,11 @@
       "behavioral finance"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "sTS1oHKVve0",
+    "youtube_url": "https://www.youtube.com/shorts/sTS1oHKVve0",
+    "produced_at": "2026-05-26T11:22:28.311420"
   },
   {
     "day": "wednesday",

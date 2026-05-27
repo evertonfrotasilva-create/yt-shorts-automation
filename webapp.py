@@ -4,7 +4,7 @@ Inicie com: python webapp.py
 Acesse em:  http://localhost:8080
 """
 
-import os, json, uuid, threading, time, asyncio, re
+import os, json, uuid, threading, time, asyncio, re, subprocess
 from pathlib import Path
 from datetime import date, datetime, timezone, timedelta
 from typing import Optional
@@ -36,6 +36,32 @@ VOICE_IDS = {
     "josh":   "TxGEqnHWrfWFTfGW9XjX",
     "arnold": "VR6AewLTigWG4xSOukaG",
 }
+
+# ── Git push helper ────────────────────────────────────────────────────────────
+
+def _git_push_queue():
+    """Commit e push da fila para o GitHub após produção local.
+    Evita que o GitHub Actions re-produza vídeos já prontos.
+    Falha silenciosa — a produção já está concluída."""
+    import logging
+    log = logging.getLogger("webapp")
+    try:
+        repo = BASE_DIR
+        subprocess.run(["git", "add", "queue/"], cwd=repo, check=True, capture_output=True)
+        diff = subprocess.run(["git", "diff", "--staged", "--quiet"], cwd=repo, capture_output=True)
+        if diff.returncode == 0:
+            return  # nada a commitar
+        subprocess.run(
+            ["git", "commit", "-m", f"auto: queue {date.today().isoformat()}"],
+            cwd=repo, check=True, capture_output=True,
+        )
+        subprocess.run(["git", "pull", "--rebase", "origin", "master"],
+                       cwd=repo, capture_output=True)
+        subprocess.run(["git", "push"], cwd=repo, check=True, capture_output=True)
+        log.info("Queue commitada e enviada para o GitHub.")
+    except Exception as e:
+        log.warning(f"Git push falhou (não-fatal): {e}")
+
 
 # ── Job tracking ───────────────────────────────────────────────────────────────
 _jobs: dict = {}
@@ -371,11 +397,11 @@ def _upload_youtube(video_path: Path, entry: dict) -> str:
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
 
-    yt  = build("youtube", "v3", credentials=_load_youtube_creds())
-    brt = timezone(timedelta(hours=-3))
-    today = date.today()
-    ph  = entry.get("publish_hour_brt", 18)
-    pub = datetime(today.year, today.month, today.day, ph, 0, 0, tzinfo=brt).isoformat()
+    yt       = build("youtube", "v3", credentials=_load_youtube_creds())
+    brt      = timezone(timedelta(hours=-3))
+    pub_date = date.fromisoformat(entry.get("date") or date.today().isoformat())
+    ph       = entry.get("publish_hour_brt", 18)
+    pub      = datetime(pub_date.year, pub_date.month, pub_date.day, ph, 0, 0, tzinfo=brt).isoformat()
 
     body = {
         "snippet": {
@@ -461,6 +487,7 @@ def _run_queue_production(job_id: str, entry: dict, queue_file: Path):
                                "youtube_url": yt_url, "video_id": video_id})
             set_queue_status("done", video_id=video_id, youtube_url=yt_url,
                              produced_at=datetime.now().isoformat(), error_msg="")
+            _git_push_queue()
 
         except Exception as e:
             # remove render parcial para permitir re-tentativa limpa
