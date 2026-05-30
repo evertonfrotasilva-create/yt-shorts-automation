@@ -55,10 +55,16 @@ def _git_push_queue():
             ["git", "commit", "-m", f"auto: queue {date.today().isoformat()}"],
             cwd=repo, check=True, capture_output=True,
         )
-        subprocess.run(["git", "pull", "--rebase", "origin", "master"],
-                       cwd=repo, capture_output=True)
-        subprocess.run(["git", "push"], cwd=repo, check=True, capture_output=True)
-        log.info("Queue commitada e enviada para o GitHub.")
+        # Retry push até 3 vezes com rebase entre tentativas (evita conflitos de remote)
+        for attempt in range(3):
+            r = subprocess.run(["git", "push"], cwd=repo, capture_output=True)
+            if r.returncode == 0:
+                log.info("Queue commitada e enviada para o GitHub.")
+                return
+            log.warning(f"Push rejeitado (tentativa {attempt+1}/3) — rebasing...")
+            subprocess.run(["git", "pull", "--rebase", "origin", "master"],
+                           cwd=repo, capture_output=True)
+        log.warning("Git push falhou após 3 tentativas (não-fatal).")
     except Exception as e:
         log.warning(f"Git push falhou (não-fatal): {e}")
 
@@ -401,7 +407,12 @@ def _upload_youtube(video_path: Path, entry: dict) -> str:
     brt      = timezone(timedelta(hours=-3))
     pub_date = date.fromisoformat(entry.get("date") or date.today().isoformat())
     ph       = entry.get("publish_hour_brt", 18)
-    pub      = datetime(pub_date.year, pub_date.month, pub_date.day, ph, 0, 0, tzinfo=brt).isoformat()
+    pub_dt   = datetime(pub_date.year, pub_date.month, pub_date.day, ph, 0, 0, tzinfo=brt)
+    # YouTube exige publishAt pelo menos 5 min no futuro — garante margem de 10 min
+    min_pub  = datetime.now(tz=timezone.utc) + timedelta(minutes=10)
+    if pub_dt.astimezone(timezone.utc) < min_pub:
+        pub_dt = min_pub
+    pub      = pub_dt.isoformat()
 
     body = {
         "snippet": {

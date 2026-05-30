@@ -452,6 +452,11 @@ def upload_youtube(video_path: Path, entry: dict) -> str:
     pub_date     = date.fromisoformat(entry.get("date") or date.today().isoformat())
     brt          = timezone(timedelta(hours=-3))
     publish_dt   = datetime(pub_date.year, pub_date.month, pub_date.day, publish_hour, 0, 0, tzinfo=brt)
+    # YouTube exige publishAt pelo menos 5 min no futuro — garante margem de 10 min
+    min_publish  = datetime.now(tz=timezone.utc) + timedelta(minutes=10)
+    if publish_dt.astimezone(timezone.utc) < min_publish:
+        publish_dt = min_publish
+        log.warning(f"publish_dt estava no passado/muito próximo; ajustado para {publish_dt.isoformat()}")
 
     body = {
         "snippet": {
@@ -632,19 +637,25 @@ def main():
     log.info(f"{len(today_entries)} vídeo(s) para hoje")
     success_count = 0
 
-    for i, entry in enumerate(today_entries, 1):
-        log.info(f"\n── Vídeo {i}/{len(today_entries)} ─────────────────────────────")
+    today_slugs = [e["slug"] for e in today_entries]
+    for i, slug in enumerate(today_slugs, 1):
+        log.info(f"\n── Vídeo {i}/{len(today_slugs)} ─────────────────────────────")
         entries = json.loads(queue_file.read_text(encoding="utf-8"))
-        ok = produce_entry(queue_file, entries, entry, args)
+        fresh_entry = next((e for e in entries if e["slug"] == slug), None)
+        if fresh_entry is None:
+            log.error(f"Entrada {slug} desapareceu da fila — pulando")
+            continue
+        ok = produce_entry(queue_file, entries, fresh_entry, args)
         if ok:
             success_count += 1
 
     log.info("\n" + "=" * 60)
-    log.info(f"CONCLUIDO  {success_count}/{len(today_entries)} vídeos produzidos")
+    log.info(f"CONCLUIDO  {success_count}/{len(today_slugs)} vídeos produzidos")
     log.info("=" * 60)
 
-    # Só falha hard se NENHUM vídeo foi produzido — permite commit parcial no CI
-    if success_count == 0 and len(today_entries) > 0:
+    # Sai com código 1 se qualquer vídeo falhou — dispara notificação no CI.
+    # O if:always() no daily.yml garante que a fila é commitada de qualquer forma.
+    if success_count < len(today_slugs):
         sys.exit(1)
 
 

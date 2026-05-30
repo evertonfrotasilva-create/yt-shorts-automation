@@ -113,7 +113,7 @@ jobs:
           git pull --rebase origin master || true
           git add queue/
           git diff --staged --quiet || git commit -m "auto: queue $(date +%Y-%m-%d)"
-          git push || true
+          for i in 1 2 3; do git push && break; git pull --rebase origin master || true; done
 
       # Notificação de falha: abre uma issue no repo com link para o log
       - name: Notificar falha
