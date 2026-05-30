@@ -89,7 +89,6 @@ def _build_prompt(report: dict, past_titles: list[str], week_dates: list[dict]) 
 
 CHANNEL BRIEF:
 - Niche: Personal finance education in English
-- Format: YouTube Shorts (~75 seconds, conversational)
 - Tone: Calm, insightful, slightly provocative — like a trusted mentor
 - Target audience: 25-40 year olds who feel stuck financially
 - Style rules:
@@ -99,7 +98,11 @@ CHANNEL BRIEF:
   * End with a question + "subscribe" CTA
   * Never say "In this video" — start in medias res
   * Avoid complex financial jargon
-  * Narration length: 180-210 words (reads in ~70-80 seconds at natural pace)
+
+THREE SLOT FORMATS (critical — each slot has a different length and purpose):
+- Slot A (75 seconds): 180-210 words. Full depth — hook, full explanation, data, story arc, CTA.
+- Slot B (40 seconds): 90-105 words. Impactful punch — strong hook + core insight + CTA. No filler.
+- Slot C (30 seconds): 65-75 words. Ultra-short — one stat, the twist, CTA. Every word must earn its place.
 
 PERFORMANCE DATA:
 - Best posting hours (BRT, highest to lowest engagement): {best_hours}
@@ -167,7 +170,7 @@ def run(dry_run: bool = False) -> Path:
                             "day":              {"type": "string", "description": "e.g. monday"},
                             "slot":             {"type": "string", "enum": ["a", "b", "c"]},
                             "title":            {"type": "string", "description": "Compelling title, max 80 chars"},
-                            "narration":        {"type": "string", "description": "Full script, 180-210 words"},
+                            "narration":        {"type": "string", "description": "Script text. Slot A: 180-210 words. Slot B: 90-105 words (impactful, punchy). Slot C: 65-75 words (ultra-short)."},
                             "description":      {"type": "string", "description": "YouTube description, max 400 chars + hashtags"},
                             "tags":             {"type": "array", "items": {"type": "string"}, "description": "8-10 tags"},
                             "publish_hour_brt": {"type": "integer", "description": "Publishing hour in BRT timezone"},
@@ -220,6 +223,7 @@ def run(dry_run: bool = False) -> Path:
         if not day_info:
             continue
         slot = e["slot"]
+        slot_cfg = {"a": (75, 12), "b": (40, 4), "c": (30, 3)}.get(slot, (75, 12))
         queue_entries.append({
             "day":              e["day"],
             "day_pt":           day_info["day_pt"],
@@ -227,8 +231,8 @@ def run(dry_run: bool = False) -> Path:
             "slot":             slot,
             "slug":             f"video_{day_info['slug']}_{day_info['mmdd']}_{slot}",
             "narration":        e["narration"],
-            "num_takes":        12,
-            "duration":         75,
+            "num_takes":        slot_cfg[1],
+            "duration":         slot_cfg[0],
             "voice":            "rachel",
             "title":            e["title"],
             "description":      e["description"],
