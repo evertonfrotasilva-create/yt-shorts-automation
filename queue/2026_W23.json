@@ -22,9 +22,12 @@
       "money tips",
       "financial freedom"
     ],
-    "publish_hour_brt": 14,
-    "status": "pending",
-    "error_msg": ""
+    "publish_hour_brt": 11,
+    "status": "done",
+    "error_msg": "",
+    "video_id": "UDsMDAFfrgQ",
+    "youtube_url": "https://www.youtube.com/shorts/UDsMDAFfrgQ",
+    "produced_at": "2026-06-01T23:44:53.381388"
   },
   {
     "day": "monday",
@@ -48,9 +51,12 @@
       "personal finance",
       "wealth"
     ],
-    "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "publish_hour_brt": 14,
+    "status": "done",
+    "error_msg": "",
+    "video_id": "jlCYwplPhZI",
+    "youtube_url": "https://www.youtube.com/shorts/jlCYwplPhZI",
+    "produced_at": "2026-06-01T23:53:33.301419"
   },
   {
     "day": "monday",
@@ -75,8 +81,11 @@
       "money tips"
     ],
     "publish_hour_brt": 21,
-    "status": "pending",
-    "error_msg": ""
+    "status": "done",
+    "error_msg": "",
+    "video_id": "Jr_KwmtB0mc",
+    "youtube_url": "https://www.youtube.com/shorts/Jr_KwmtB0mc",
+    "produced_at": "2026-06-02T00:00:21.628000"
   },
   {
     "day": "tuesday",
