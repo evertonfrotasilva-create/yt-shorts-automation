@@ -85,45 +85,57 @@ def _build_prompt(report: dict, past_titles: list[str], week_dates: list[dict]) 
 
     week_info = f"Week of {week_dates[0]['date']} to {week_dates[6]['date']}"
 
-    return f"""You are a YouTube Shorts script writer for the channel "The Reality of Money by Rufino".
+    return f"""You are a YouTube Shorts script writer for the channel "Daily Manna".
 
 CHANNEL BRIEF:
-- Niche: Personal finance education in English
-- Tone: Calm, insightful, slightly provocative — like a trusted mentor
-- Target audience: 25-40 year olds who feel stuck financially
+- Niche: Bible verse of the day with brief explanation (NIV translation)
+- Tone: Warm, reverent, accessible — like a wise friend sharing God's word
+- Target audience: English-speaking Christians and faith-seekers looking for daily spiritual nourishment
 - Style rules:
-  * Open with a hook that challenges a common belief (first 3 seconds are critical)
-  * No fluff — every sentence must earn its place
-  * Use specific numbers and data when possible
-  * End with a question + "subscribe" CTA
-  * Never say "In this video" — start in medias res
-  * Avoid complex financial jargon
+  * Open with a PSYCHOLOGICAL HOOK (first 10-15 words) — NOT the verse itself
+  * Hook types (vary them): surprising context ("Paul wrote this from prison"), emotional recognition
+    ("If you've ever felt..."), counterintuitive truth ("God didn't say what most people think"),
+    pattern interrupt ("Most people skip past this verse. They shouldn't.")
+  * Hooks must be ETHICAL — create curiosity and emotional connection, never fear, false urgency, or
+    misleading claims
+  * Every word counts — 30 seconds total, ~65-75 words maximum
+  * After the hook, deliver the verse with its reference naturally
+  * Explanation must be practical and relatable, not preachy
+  * End with a personal question that invites comment + "Subscribe for a verse every day"
+  * Never say "In this video" — go straight to the hook
+  * Use NIV translation exclusively
 
-THREE SLOT FORMATS (critical — each slot has a different length and purpose):
-- Slot A (75 seconds): 180-210 words. Full depth — hook, full explanation, data, story arc, CTA.
-- Slot B (40 seconds): 90-105 words. Impactful punch — strong hook + core insight + CTA. No filler.
-- Slot C (30 seconds): 65-75 words. Ultra-short — one stat, the twist, CTA. Every word must earn its place.
+VIDEO STRUCTURE (30 seconds, 3 takes of ~10s each):
+- Take 1 (~10s): Hook (2-3s) + verse with reference clearly stated (~8s).
+  Example: "The night before he was crucified, Jesus said this — John 14 verse 27: Peace I leave with you..."
+- Take 2 (~15s): Brief explanation — context, what it meant then, what it means now. One key insight only.
+- Take 3 (~5s): Personal application question + "Subscribe for a verse every day."
+
+ALL THREE SLOTS are the same format and length (30 seconds, ~65-75 words).
+Each slot should feature a DIFFERENT verse and theme — no two videos on the same day should feel similar.
 
 PERFORMANCE DATA:
 - Best posting hours (BRT, highest to lowest engagement): {best_hours}
 - Channel average views: {avg_views}{top_section}{past_section}
 
 YOUR TASK:
-Generate 21 original YouTube Shorts scripts for {week_info}.
-3 videos per day, 7 days. Each video must be completely different in topic and angle.
+Generate 21 original Bible verse scripts for {week_info}.
+3 videos per day, 7 days. Each video must use a DIFFERENT verse and cover a DIFFERENT theme.
 
 Distribute publish hours across the day using the best performing slots: {best_hours}
 Assign hour {best_hours[0]}h to slot "a" (morning), {best_hours[1] if len(best_hours) > 1 else 14}h to slot "b" (afternoon), {best_hours[2] if len(best_hours) > 2 else 20}h to slot "c" (evening).
 
-Personal finance topics to explore (pick the most engaging angles, don't be generic):
-- The psychology of spending, saving, and investing
-- Common money myths and rules that are broken or outdated
-- Specific strategies: debt payoff, investing, income, budgeting
-- Behavioral economics: why we make bad money decisions
-- Career and income: raises, side income, negotiation
-- Wealth mindset: how rich vs poor people think differently
-- Specific financial instruments: index funds, real estate, crypto (skeptical angle), etc.
-- Life stage finance: 20s, 30s, retirement planning
+Verse themes to explore across the week (vary these — don't cluster similar themes on the same day):
+- Strength and courage (Joshua 1:9, Isaiah 40:31, Philippians 4:13...)
+- God's love and grace (John 3:16, Romans 8:38-39, Ephesians 2:8-9...)
+- Peace and anxiety (Philippians 4:6-7, Isaiah 26:3, John 14:27...)
+- Hope and perseverance (Romans 5:3-4, Jeremiah 29:11, Lamentations 3:22-23...)
+- Forgiveness and redemption (1 John 1:9, Psalm 103:12, Romans 8:1...)
+- Purpose and calling (Jeremiah 29:11, Ephesians 2:10, Proverbs 3:5-6...)
+- Wisdom and guidance (James 1:5, Proverbs 3:5-6, Psalm 119:105...)
+- Gratitude and joy (Philippians 4:4, 1 Thessalonians 5:18, Psalm 118:24...)
+- Faith and trust (Hebrews 11:1, Proverbs 3:5, Matthew 17:20...)
+- Prayer (Matthew 7:7, Philippians 4:6, 1 Thessalonians 5:17...)
 
 Call the generate_weekly_queue tool with all 21 scripts."""
 
@@ -170,7 +182,7 @@ def run(dry_run: bool = False) -> Path:
                             "day":              {"type": "string", "description": "e.g. monday"},
                             "slot":             {"type": "string", "enum": ["a", "b", "c"]},
                             "title":            {"type": "string", "description": "Compelling title, max 80 chars"},
-                            "narration":        {"type": "string", "description": "Script text. Slot A: 180-210 words. Slot B: 90-105 words (impactful, punchy). Slot C: 65-75 words (ultra-short)."},
+                            "narration":        {"type": "string", "description": "Script text. All slots: 65-75 words (~30 seconds). Structure: verse + reference → brief explanation → personal question + CTA."},
                             "description":      {"type": "string", "description": "YouTube description, max 400 chars + hashtags"},
                             "tags":             {"type": "array", "items": {"type": "string"}, "description": "8-10 tags"},
                             "publish_hour_brt": {"type": "integer", "description": "Publishing hour in BRT timezone"},
@@ -223,7 +235,7 @@ def run(dry_run: bool = False) -> Path:
         if not day_info:
             continue
         slot = e["slot"]
-        slot_cfg = {"a": (75, 12), "b": (40, 4), "c": (30, 3)}.get(slot, (75, 12))
+        slot_cfg = {"a": (30, 3), "b": (30, 3), "c": (30, 3)}.get(slot, (30, 3))
         queue_entries.append({
             "day":              e["day"],
             "day_pt":           day_info["day_pt"],
