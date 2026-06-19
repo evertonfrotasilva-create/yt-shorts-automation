@@ -334,8 +334,8 @@
       "christian shorts"
     ],
     "publish_hour_brt": 8,
-    "status": "pending",
-    "error_msg": ""
+    "status": "error",
+    "error_msg": "headers: {'date': 'Fri, 19 Jun 2026 12:51:36 GMT', 'server': 'uvicorn', 'content-length': '247', 'content-type': 'application/json', 'vary': 'Accept-Language', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, PATCH, OPTIONS, DELETE, GET, PUT', 'access-control-max-age': '600', 'strict-transport-security': 'max-age=1800;', 'x-trace-id': 'a280f9d5182d511636cc89f372f3c2d0', 'x-region': 'us-central1', 'via': '1.1 google', 'alt-svc': 'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000'}, status_code: 401, body: {'detail': {'type': 'payment_required', 'code': 'payment_issue', 'message': 'Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage.', 'status': 'payment_issue', 'request_id': 'a280f9d5182d511636cc89f372f3c2d0'}}"
   },
   {
     "day": "friday",
@@ -360,8 +360,8 @@
       "christian shorts"
     ],
     "publish_hour_brt": 14,
-    "status": "pending",
-    "error_msg": ""
+    "status": "error",
+    "error_msg": "headers: {'date': 'Fri, 19 Jun 2026 12:51:36 GMT', 'server': 'uvicorn', 'content-length': '247', 'content-type': 'application/json', 'vary': 'Accept-Language', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, PATCH, OPTIONS, DELETE, GET, PUT', 'access-control-max-age': '600', 'strict-transport-security': 'max-age=1800;', 'x-trace-id': 'f4c0c0fa4713d1e2b2b9fdcd3c10168d', 'x-region': 'us-central1', 'via': '1.1 google', 'alt-svc': 'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000'}, status_code: 401, body: {'detail': {'type': 'payment_required', 'code': 'payment_issue', 'message': 'Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage.', 'status': 'payment_issue', 'request_id': 'f4c0c0fa4713d1e2b2b9fdcd3c10168d'}}"
   },
   {
     "day": "friday",
@@ -386,8 +386,8 @@
       "christian shorts"
     ],
     "publish_hour_brt": 20,
-    "status": "pending",
-    "error_msg": ""
+    "status": "error",
+    "error_msg": "headers: {'date': 'Fri, 19 Jun 2026 12:51:36 GMT', 'server': 'uvicorn', 'content-length': '247', 'content-type': 'application/json', 'vary': 'Accept-Language', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, PATCH, OPTIONS, DELETE, GET, PUT', 'access-control-max-age': '600', 'strict-transport-security': 'max-age=1800;', 'x-trace-id': '2ad39fc22383b10d3d4d5a8caca178d4', 'x-region': 'us-central1', 'via': '1.1 google', 'alt-svc': 'h3=\":443\"; ma=2592000'}, status_code: 401, body: {'detail': {'type': 'payment_required', 'code': 'payment_issue', 'message': 'Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage.', 'status': 'payment_issue', 'request_id': '2ad39fc22383b10d3d4d5a8caca178d4'}}"
   },
   {
     "day": "saturday",
