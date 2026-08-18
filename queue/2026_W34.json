@@ -28,8 +28,8 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "pending",
-    "error_msg": ""
+    "status": "error",
+    "error_msg": "Narracao vazia"
   },
   {
     "day": "wednesday",
