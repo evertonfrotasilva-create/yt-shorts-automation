@@ -2,8 +2,8 @@
   {
     "day": "monday",
     "day_pt": "Segunda",
-    "date": "2026-08-24",
-    "slug": "video_mon_0824",
+    "date": "2026-08-31",
+    "slug": "video_mon_0831",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -12,14 +12,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "tuesday",
     "day_pt": "Terca",
-    "date": "2026-08-25",
-    "slug": "video_tue_0825",
+    "date": "2026-09-01",
+    "slug": "video_tue_0901",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -28,14 +28,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "wednesday",
     "day_pt": "Quarta",
-    "date": "2026-08-26",
-    "slug": "video_wed_0826",
+    "date": "2026-09-02",
+    "slug": "video_wed_0902",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -44,14 +44,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "thursday",
     "day_pt": "Quinta",
-    "date": "2026-08-27",
-    "slug": "video_thu_0827",
+    "date": "2026-09-03",
+    "slug": "video_thu_0903",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -60,14 +60,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "friday",
     "day_pt": "Sexta",
-    "date": "2026-08-28",
-    "slug": "video_fri_0828",
+    "date": "2026-09-04",
+    "slug": "video_fri_0904",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -76,14 +76,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "saturday",
     "day_pt": "Sabado",
-    "date": "2026-08-29",
-    "slug": "video_sat_0829",
+    "date": "2026-09-05",
+    "slug": "video_sat_0905",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -92,14 +92,14 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   },
   {
     "day": "sunday",
     "day_pt": "Domingo",
-    "date": "2026-08-30",
-    "slug": "video_sun_0830",
+    "date": "2026-09-06",
+    "slug": "video_sun_0906",
     "narration": "",
     "num_takes": 12,
     "duration": 75,
@@ -108,7 +108,7 @@
     "description": "",
     "tags": [],
     "publish_hour_brt": 18,
-    "status": "error",
-    "error_msg": "Narracao vazia"
+    "status": "pending",
+    "error_msg": ""
   }
 ]
